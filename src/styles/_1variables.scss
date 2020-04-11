@@ -1,0 +1,37 @@
+// JYBE Colors
+$white: #ffffff;
+$black: #000000;
+
+/**
+ * Media Queries
+ */
+$breakpoints: (
+  largeDesktop: '(min-width: 1300px)',
+  customDesktop: '(min-width: 1440px)',
+  desktop: '(min-width: 1200px) and (max-width: 1599px)',
+  desktopSmall: '(min-width: 992px) and (max-width: 1199px)',
+  onlyDesktop: '(min-width: 992px)',
+  desktopAndTablet: '(min-width: 768px)',
+  desktopSmallAndTablet: '(min-width: 768px) and (max-width: 1299px)',
+  maxTablet: '(max-width: 991px)',
+  maxTabletSmaller: '(max-width: 968px)',
+  maxTabletSmaller2: '(max-width: 952px)',
+  tablet: '(min-width: 768px) and (max-width: 991px)',
+  phone: '(max-width: 767px)',
+  phoneXS: '(max-width: 600px)',
+  phoneSmall: '(max-width: 480px)',
+  phoneSm: '(max-width: 400px)',
+  phoneSmIphoneX: '(max-width: 400px) and (max-height: 850px)',
+
+  //used:
+  iphone5: '(max-width: 375px)',
+  phoneSmHeight: '(max-height: 630px)'
+);
+
+/*** Fonts */
+$montserrat-regular: 'MontserratRegular';
+$montserrat-medium: 'MontserratMedium';
+$montserrat-bold: 'MontserratBold';
+$montserrat-semibold: 'MontserratSemibold';
+
+$pacifico-regular: 'PacificoRegular';

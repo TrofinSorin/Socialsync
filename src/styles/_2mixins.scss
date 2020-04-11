@@ -1,0 +1,192 @@
+/*
+ * Font face mixin
+ */
+@mixin font-face($font-family, $file-path, $font-weight: 'normal', $font-style: 'normal') {
+  @font-face {
+    font-family: $font-family;
+    src: url('#{$file-path}.eot');
+    src: url('#{$file-path}.eot?#iefix') format('embedded-opentype'), url('#{$file-path}.woff') format('woff'),
+      url('#{$file-path}.ttf') format('truetype'), url('#{$file-path}.svg##{$font-family}') format('svg');
+    font-weight: $font-weight;
+    font-style: $font-style;
+  }
+}
+
+// Transition
+@mixin transition($properties...) {
+  @if length($properties) >= 1 {
+    transition: $properties;
+  } @else {
+    transition: all 0.3s ease-in-out 0s;
+  }
+}
+
+/**
+ * Flexbox Container
+ */
+@mixin flex(
+  $wrap: nowrap,
+  $direction: row,
+  $justify: flex-start,
+  $align: stretch,
+  $content: stretch,
+  $order: 1,
+  $inline: false
+) {
+  @if $inline == true {
+    display: inline-flex;
+  }
+
+  @if $inline == false {
+    display: flex;
+  }
+
+  @if $wrap != nowrap {
+    flex-wrap: $wrap;
+  }
+  @if $direction != row {
+    flex-direction: $direction;
+  }
+  @if $justify != flex-start {
+    justify-content: $justify;
+  }
+  @if $align != stretch {
+    align-items: $align;
+  }
+  @if $content != stretch {
+    align-content: $align;
+  }
+  @if $order != 1 {
+    order: $order;
+  }
+}
+
+@mixin flex-percentage($percentage: 1) {
+  @if $percentage != 1 {
+    box-sizing: border-box;
+    flex: 1 1 $percentage;
+    max-width: $percentage;
+  } @else {
+    box-sizing: border-box;
+    flex: 1;
+    max-width: 100%;
+  }
+}
+
+/**
+ * Media Queries
+ */
+@mixin respondto($device) {
+  @each $name, $point in $breakpoints {
+    @if $name == $device {
+      @media #{$point} {
+        @content;
+      }
+    }
+  }
+}
+
+// Placeholder
+@mixin placeholder {
+  ::-webkit-input-placeholder {
+    @content;
+  }
+  :-moz-placeholder {
+    @content;
+  }
+  ::-moz-placeholder {
+    @content;
+  }
+  :-ms-input-placeholder {
+    @content;
+  }
+}
+
+// Margins
+@for $i from 1 through 20 {
+  .mt-#{$i} {
+    margin-top: #{$i}rem;
+  }
+}
+
+@for $i from 1 through 20 {
+  .mb-#{$i} {
+    margin-bottom: #{$i}rem;
+  }
+}
+
+@for $i from 1 through 20 {
+  .ml-#{$i} {
+    margin-left: #{$i}rem;
+  }
+}
+
+@for $i from 1 through 20 {
+  .mr-#{$i} {
+    margin-right: #{$i}rem;
+  }
+}
+
+@for $i from 1 through 20 {
+  .mt-#{$i}--xs {
+    @include respondto(phone) {
+      margin-top: #{$i}rem;
+    }
+  }
+}
+
+@for $i from 1 through 20 {
+  .mb-#{$i}--xs {
+    @include respondto(phone) {
+      margin-bottom: #{$i}rem;
+    }
+  }
+}
+
+// Paddings
+@for $i from 1 through 20 {
+  .pt-#{$i} {
+    padding-top: #{$i}rem;
+  }
+}
+
+@for $i from 1 through 20 {
+  .pb-#{$i} {
+    padding-bottom: #{$i}rem;
+  }
+}
+
+@for $i from 1 through 20 {
+  .pl-#{$i} {
+    padding-left: #{$i}rem;
+  }
+}
+
+@for $i from 1 through 20 {
+  @include respondto(phone) {
+    .pl-#{$i}--xs {
+      padding-left: #{$i}rem;
+    }
+  }
+}
+
+@for $i from 1 through 20 {
+  .pr-#{$i} {
+    padding-right: #{$i}rem;
+  }
+}
+
+@mixin placeholder {
+  &.placeholder {
+    @content;
+  }
+  &:-moz-placeholder {
+    @content;
+  }
+  &::-moz-placeholder {
+    @content;
+  }
+  &::-webkit-input-placeholder {
+    @content;
+  }
+}

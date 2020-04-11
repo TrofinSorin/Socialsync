@@ -1,0 +1,58 @@
+import React, { useEffect } from 'react';
+import PropTypes from 'prop-types';
+import { useDispatch } from 'react-redux';
+import { useHistory } from 'react-router-dom';
+import Auth from '@services/Auth';
+import environment from 'environment';
+import { makeStyles } from '@material-ui/core/styles';
+import Img from '@shared/Images/Images';
+import logo from '@assets/images/jybe-logo.png';
+import * as usersActions from '@redux/actions/usersActions';
+
+const useStyles = makeStyles(theme => ({
+  root: {
+    alignItems: 'center',
+    display: 'flex',
+    flexDirection: 'column',
+    height: '100vh',
+    justifyContent: 'center',
+    margin: '0 auto',
+    textAlign: 'center',
+    width: '80%'
+  }
+}));
+
+const Logout = props => {
+  let history = useHistory();
+  const classes = useStyles();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(usersActions.logout()).then(response => {
+      Auth.signout();
+
+      setTimeout(() => {
+        history.push('/');
+      }, environment.logoutRedirectTimeout);
+    });
+  });
+
+  return (
+    <div className={classes.root}>
+      <Img src={logo} alt='logo' />
+      <h1>
+        Thank you for using Jybe. <br /> You are now being logged out of the system.
+      </h1>
+    </div>
+  );
+};
+
+Logout.propTypes = {
+  // bla: PropTypes.string,
+};
+
+Logout.defaultProps = {
+  // bla: 'test',
+};
+
+export default Logout;

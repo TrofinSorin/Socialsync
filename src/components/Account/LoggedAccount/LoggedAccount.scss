@@ -1,0 +1,21 @@
+@import 'src/styles/_colors';
+@import 'src/styles/1variables.scss';
+@import 'src/styles/2mixins';
+
+.greeting-block {
+  p {
+    color: map-get($greyPalette, 'woodsmoke');
+    font-family: $montserrat-semibold;
+    font-size: 1.5rem;
+  }
+}
+
+.logged-account {
+  margin-bottom: 6rem;
+  padding: 1rem 2rem 8.5rem 2rem;
+
+  h2 {
+    font-size: 1.8rem;
+    margin: 1rem 0;
+  }
+}

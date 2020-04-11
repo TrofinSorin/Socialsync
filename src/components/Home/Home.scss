@@ -1,0 +1,54 @@
+@import 'src/styles/_colors';
+@import 'src/styles/1variables.scss';
+@import 'src/styles/2mixins';
+
+.home-header {
+  padding: 3rem 2rem 1rem 2rem;
+
+  .item-block {
+    &:not(:last-of-type) {
+      padding-right: 0.5rem;
+    }
+  }
+
+  button {
+    padding: 0;
+  }
+
+  .address-item {
+    background-color: map-get($greyPalette, 'athens-gray');
+    border-bottom-left-radius: 12rem;
+    border-bottom-right-radius: 6rem;
+    border-top-left-radius: 12rem;
+    border-top-right-radius: 6rem;
+    padding-right: 3rem;
+  }
+
+  .address-block {
+    p {
+      color: map-get($greyPalette, 'ebony-clay');
+      font-family: $montserrat-bold;
+      font-size: 1.4rem;
+      margin: 0;
+    }
+
+    span {
+      display: block;
+      font-size: 1.2rem;
+      max-width: 13rem;
+    }
+  }
+
+  &.top-bar {
+    height: 100%;
+  }
+}
+
+.jybe-recommendations {
+  padding: 1rem 2rem 12rem;
+  margin-bottom: 15rem;
+
+  h2 {
+    margin: 0 0 1rem 0;
+  }
+}
