@@ -10,7 +10,6 @@ import Img from '@shared/Images/Images';
 import userIcon from '@assets/icons/user.svg';
 import passwordIcon from '@assets/icons/lock.svg';
 import facebookIcon from '@assets/icons/facebook.svg';
-import googleIcon from '@assets/icons/google-plus.svg';
 import * as usersActions from '@redux/actions/usersActions';
 import Auth from '@services/Auth';
 import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
@@ -27,7 +26,7 @@ const Login = props => {
     if (Auth.getUser().accessToken) {
       history.push('/home');
     }
-  }, []);
+  }, [history]);
 
   const handleLoginSubmit = async event => {
     event.preventDefault();
@@ -121,9 +120,10 @@ const Login = props => {
               <GoogleLogin
                 clientId={environment.socialApps.google.clientId}
                 render={renderProps => (
-                  <button onClick={renderProps.onClick} className='social-media-link' disabled={renderProps.disabled}>
-                    <Img src={googleIcon} alt='Google icon' />
-                  </button>
+                  <button
+                    onClick={renderProps.onClick}
+                    className='social-media-link'
+                    disabled={renderProps.disabled}></button>
                 )}
                 onSuccess={responseGoogle}
                 onFailure={responseGoogle}

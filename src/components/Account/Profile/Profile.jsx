@@ -5,7 +5,7 @@ import './Profile.scss';
 const Profile = props => {
   return (
     <React.Fragment>
-      <Grid container className='logged-account athens-gray-bk'>
+      <Grid container className='logged-account'>
         Logged Account
       </Grid>
     </React.Fragment>

@@ -56,6 +56,7 @@ const ChatRoom = props => {
     setRoom(user.socket);
   };
 
+  /*eslint-disable */
   useEffect(() => {
     socket.emit('getRooms');
 
@@ -67,7 +68,9 @@ const ChatRoom = props => {
       });
     });
   }, []);
+  /*eslint-enable */
 
+  /*eslint-disable */
   useEffect(() => {
     setUserLoader(true);
 
@@ -120,7 +123,9 @@ const ChatRoom = props => {
 
     return () => socket.disconnect();
   }, []);
+  /*eslint-enable */
 
+  /*eslint-disable */
   useEffect(() => {
     const onlineUsersArray = [];
     const usersArray = Object.assign([], users);
@@ -142,6 +147,7 @@ const ChatRoom = props => {
 
     setOnlineUsersToShow([...new Set(filteredArray)]);
   }, [onlineUsers]);
+  /*eslint-enable */
 
   const submitMessageHandler = e => {
     e.preventDefault();

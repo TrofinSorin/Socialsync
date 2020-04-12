@@ -10,8 +10,6 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import Img from '@shared/Images/Images';
 import userIcon from '@assets/icons/user.svg';
 import passwordIcon from '@assets/icons/lock.svg';
-import facebookIcon from '@assets/icons/facebook.svg';
-import googleIcon from '@assets/icons/google-plus.svg';
 import * as usersActions from '@redux/actions/usersActions';
 import { useHistory } from 'react-router-dom';
 import formSerialize from 'form-serialize';
@@ -135,18 +133,6 @@ const CreateAccount = props => {
             <ButtonComponent disabled={submitButtonDisabled} buttonType='submit' type='btn-primary'>
               Create account
             </ButtonComponent>
-
-            <Grid container>
-              <Grid item xs className='social-media-links layout-row align-items-center justify-content-center'>
-                <Link to=''>
-                  <Img src={facebookIcon} alt='Facebook icon' />
-                </Link>
-
-                <Link to=''>
-                  <Img src={googleIcon} alt='Google icon' />
-                </Link>
-              </Grid>
-            </Grid>
 
             <Grid container className='bottom-section'>
               <Grid item xs>

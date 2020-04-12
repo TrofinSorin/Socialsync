@@ -6,7 +6,6 @@ import Grid from '@material-ui/core/Grid';
 import ButtonComponent from '@shared/ButtonComponent';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import Img from '@shared/Images/Images';
-import logo from '@assets/images/jybe-logo.png';
 import passwordIcon from '@assets/icons/lock.svg';
 import * as usersActions from '@redux/actions/usersActions';
 import formSerialize from 'form-serialize';
@@ -44,9 +43,7 @@ const SetPassword = props => {
 
   return (
     <Grid container className='full-height'>
-      <Link to='/' className='full-width text-center mt-1 mb-3'>
-        <Img src={logo} alt='logo' />
-      </Link>
+      <Link to='/' className='full-width text-center mt-1 mb-3'></Link>
 
       <div className='security-page forgot-pass-bk text-center'>
         <div className='content-block white-overlay'>

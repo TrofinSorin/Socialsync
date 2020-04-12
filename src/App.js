@@ -33,9 +33,11 @@ function App() {
     }
   };
 
+  /*eslint-disable */
   useEffect(() => {
     getUserOnAppRefresh();
   }, []);
+  /*eslint-enable */
 
   return (
     <React.Fragment>

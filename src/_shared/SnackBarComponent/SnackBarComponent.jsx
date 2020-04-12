@@ -86,11 +86,13 @@ const SnackBarComponent = props => {
     setSnackBarState({ ...snackBarState, open: false });
   };
 
+  /*eslint-disable */
   useEffect(() => {
     if (snackbarReducer.message) {
       setSnackBarState({ ...snackBarState, open: true });
     }
   }, [snackbarReducer.message]);
+  /*eslint-enable */
 
   return (
     <React.Fragment>

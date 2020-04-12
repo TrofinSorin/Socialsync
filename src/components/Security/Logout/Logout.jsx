@@ -1,12 +1,9 @@
 import React, { useEffect } from 'react';
-import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import Auth from '@services/Auth';
 import environment from 'environment';
 import { makeStyles } from '@material-ui/core/styles';
-import Img from '@shared/Images/Images';
-import logo from '@assets/images/jybe-logo.png';
 import * as usersActions from '@redux/actions/usersActions';
 
 const useStyles = makeStyles(theme => ({
@@ -39,9 +36,8 @@ const Logout = props => {
 
   return (
     <div className={classes.root}>
-      <Img src={logo} alt='logo' />
       <h1>
-        Thank you for using Jybe. <br /> You are now being logged out of the system.
+        Thank you for using RoSocial. <br /> You are now being logged out of the system.
       </h1>
     </div>
   );

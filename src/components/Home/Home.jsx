@@ -1,13 +1,10 @@
 import React, { useEffect } from 'react';
 import Grid from '@material-ui/core/Grid';
-import { useSelector, useDispatch } from 'react-redux';
-// import * as restaurantActions from '../../redux/actions/restaurantActions';
+import { useDispatch } from 'react-redux';
 import './Home.scss';
-import Auth from '@services/Auth';
 
 const Home = props => {
   const dispatch = useDispatch();
-  const guestInfo = Auth.getGuestAuth();
 
   useEffect(() => {}, [dispatch]);
 
@@ -20,7 +17,7 @@ const Home = props => {
           </Grid>
         </Grid>
 
-        <Grid className='jybe-recommendations athens-gray-bk'>
+        <Grid>
           <Grid container>
             <Grid item xs={12} className='greeting-block layout-row align-item-center'>
               <h2>Chat Home</h2>

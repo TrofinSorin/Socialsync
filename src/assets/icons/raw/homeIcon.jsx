@@ -15,12 +15,7 @@ const HomeIcon = props => {
       <title>69C0CDCC-73C3-4D7C-B8DE-A471B2F9C611</title>
       <desc>Created with sketchtool.</desc>
       <g id='Mobile-UI' stroke='none' strokeWidth='1' fill='none' fillRule='evenodd'>
-        <g
-          id='JYBE-account-not-logged-in-1'
-          transform='translate(-33.000000, -673.000000)'
-          fill='#27273B'
-          stroke='#27273B'
-          strokeWidth='0.25'>
+        <g transform='translate(-33.000000, -673.000000)' fill='#27273B' stroke='#27273B' strokeWidth='0.25'>
           <g id='Bottom-button-bar---account' transform='translate(0.000000, 626.000000)'>
             <g id='Bottom-button-bar'>
               <path

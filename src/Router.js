@@ -38,6 +38,7 @@ export const PrivateRoute = ({ component: Component, action: Action, cancel: Can
   const dispatch = useDispatch();
   const classes = useStyles();
 
+  /*eslint-disable */
   useEffect(() => {
     let isSubscribed = true;
 
@@ -56,6 +57,7 @@ export const PrivateRoute = ({ component: Component, action: Action, cancel: Can
       isSubscribed = false;
     };
   }, []);
+  /*eslint-enable */
 
   if (!loaded)
     return (
