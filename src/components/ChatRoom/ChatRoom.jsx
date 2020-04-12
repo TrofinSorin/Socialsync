@@ -4,7 +4,7 @@ import './ChatRoom.scss';
 import * as usersActions from '@redux/actions/usersActions';
 import Loader from '../../_shared/Loader/Loader';
 import formSerialize from 'form-serialize';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import Auth from '@services/Auth';
 import useSocket from 'use-socket.io-client';
 import { useImmer } from 'use-immer';
@@ -24,7 +24,7 @@ const ChatRoom = props => {
   const [user, setUser] = useState();
   const [room, setRoom] = useState('');
   const [rooms, setRooms] = useImmer([]);
-  const [onlineUsers, setOnlineUsers] = useImmer([]);
+  const [onlineUsers, setOnlineUsers] = useState([]);
   const [onlineUsersToShow, setOnlineUsersToShow] = useState([]);
 
   const sendThumb = () => {
@@ -103,6 +103,8 @@ const ChatRoom = props => {
       });
 
       socket.on('getOnlineUsers', data => {
+        setOnlineUsers([]);
+
         const onlineUsers = [];
 
         Object.keys(data).forEach(socket => {
@@ -112,9 +114,7 @@ const ChatRoom = props => {
           });
         });
 
-        setOnlineUsers(draft => {
-          draft.push(...onlineUsers);
-        });
+        setOnlineUsers(onlineUsers);
       });
     });
 
@@ -122,9 +122,10 @@ const ChatRoom = props => {
   }, []);
 
   useEffect(() => {
-    const onlineUsersArray = Object.assign([], [...new Set(onlineUsers)]);
-    console.log('onlineUsersArray:', onlineUsersArray);
+    const onlineUsersArray = [];
     const usersArray = Object.assign([], users);
+
+    onlineUsersArray.push(...onlineUsers);
 
     usersArray.forEach(user => {
       onlineUsersArray.forEach(onlineUser => {
@@ -136,10 +137,9 @@ const ChatRoom = props => {
     });
 
     const filteredArray = onlineUsersArray.filter(function(value, index) {
-      return onlineUsers.indexOf(value) == index;
+      return onlineUsers.indexOf(value) === index;
     });
 
-    console.log('filteredArray:', filteredArray);
     setOnlineUsersToShow([...new Set(filteredArray)]);
   }, [onlineUsers]);
 
@@ -225,15 +225,12 @@ const ChatRoom = props => {
                       style={{ display: 'flex', alignItems: 'center' }}
                       key={index}
                       className={
-                        user.username !== messageData.username
-                          ? 'messages--received'
-                          : 'messages--sent' + ' ' + 'messages'
+                        user.username !== messageData.username ? 'messages--received' : `messages--sent messages`
                       }>
                       <span style={{ marginRight: '1rem' }}>
                         {messageData.from === `${user.firstname} ${user.lastname}` ? 'You' : messageData.from}
                       </span>
-                      <div
-                        className={messageData.thumb === true ? 'message--thumb thumb anim-wiggle' : ' ' + 'message'}>
+                      <div className={messageData.thumb === true ? 'message--thumb thumb anim-wiggle' : ` message`}>
                         <span>{messageData.message}</span>
                       </div>
                     </div>

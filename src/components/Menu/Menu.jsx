@@ -13,9 +13,7 @@ const Menu = props => {
     location.pathname.match(/\/login/) ||
     location.pathname.match(/\/forgot-password/) ||
     location.pathname.match(/\/create/) ||
-    location.pathname.match(/\/contact-owner/) ||
-    location.pathname.match(/\/logout/) ||
-    location.pathname.match(/\/review/)
+    location.pathname.match(/\/logout/)
   ) {
     return null;
   }
@@ -30,9 +28,9 @@ const Menu = props => {
         <ChatIcon style={{ fontSize: '3rem' }}></ChatIcon>
         <span>ChatRoom</span>
       </NavLink>
-      <NavLink to='/account' activeClassName='is-active'>
+      <NavLink to='/profile' activeClassName='is-active'>
         <UserIcon></UserIcon>
-        <span>Account</span>
+        <span>Profile</span>
       </NavLink>
     </section>
   );

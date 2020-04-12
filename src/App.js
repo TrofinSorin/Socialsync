@@ -3,7 +3,6 @@ import { useDispatch } from 'react-redux';
 import './App.scss';
 import Router from './Router';
 import Menu from './components/Menu';
-import Container from '@material-ui/core/Container';
 import * as usersActions from '@redux/actions/usersActions';
 import Auth from '@services/Auth';
 import { useHistory } from 'react-router-dom';

@@ -1,8 +1,8 @@
 import React from 'react';
 import Grid from '@material-ui/core/Grid';
-import './LoggedAccount.scss';
+import './Profile.scss';
 
-const LoggedAccount = props => {
+const Profile = props => {
   return (
     <React.Fragment>
       <Grid container className='logged-account athens-gray-bk'>
@@ -12,12 +12,12 @@ const LoggedAccount = props => {
   );
 };
 
-LoggedAccount.propTypes = {
+Profile.propTypes = {
   // bla: PropTypes.string,
 };
 
-LoggedAccount.defaultProps = {
+Profile.defaultProps = {
   // bla: 'test',
 };
 
-export default LoggedAccount;
+export default Profile;

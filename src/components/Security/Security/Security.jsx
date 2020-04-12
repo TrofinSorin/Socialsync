@@ -6,7 +6,6 @@ import CreateAccount from '../CreateAccount';
 import SetPassword from '@components/Security/SetPassword';
 
 const Security = ({ match }) => {
-  console.log('match:', match);
   return (
     <React.Fragment>
       <Switch>

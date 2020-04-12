@@ -24,7 +24,7 @@ const Router = props => (
     <Switch>
       <Route path='/home' component={Home} />
       <Route path='/chat-room' component={ChatRoom} />
-      <Route path='/account' component={Account} />
+      <Route path='/profile' component={Account} />
       <Route path='/logout' component={Logout} />
       <Route path='/' component={Security} />
       <Redirect to='/' />
