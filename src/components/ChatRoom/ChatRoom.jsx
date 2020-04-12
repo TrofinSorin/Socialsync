@@ -67,6 +67,10 @@ const ChatRoom = props => {
         draft.push({ data });
       });
     });
+
+    socket.on('disconnect', data => {
+      socket.emit('getOnlineUsers');
+    });
   }, []);
   /*eslint-enable */
 
@@ -168,10 +172,6 @@ const ChatRoom = props => {
   return (
     <div className='ChatRoomWrapper'>
       <Grid container className='home-header top-bar'>
-        <Grid item xs={12} className='layout-row justify-content-center'>
-          <h1>Sorin's FB Chat</h1>
-        </Grid>
-
         {!room ? (
           <Grid item xs={6} className='layout-row justify-content-center'>
             <form onSubmit={event => joinRoom(event)} className='text-bar__field' id='form-message'>

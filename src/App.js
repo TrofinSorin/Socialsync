@@ -41,8 +41,8 @@ function App() {
 
   return (
     <React.Fragment>
-      <Router></Router>
       <Menu></Menu>
+      <Router></Router>
       <SnackBarComponent></SnackBarComponent>
     </React.Fragment>
   );

@@ -37,7 +37,7 @@ const Logout = props => {
   return (
     <div className={classes.root}>
       <h1>
-        Thank you for using RoSocial. <br /> You are now being logged out of the system.
+        Thank you for using Socialsync. <br /> You are now being logged out of the system.
       </h1>
     </div>
   );
