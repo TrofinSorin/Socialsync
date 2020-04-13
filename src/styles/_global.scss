@@ -19,12 +19,12 @@ html {
 
 body {
   font-size: 14px;
-  font-family: 'MontserratRegular', 'Helvetica Neue', 'Arial', sans-serif;
+  font-family: 'Average Sans', 'Helvetica Neue', 'Arial', sans-serif;
 }
 
 body [class^='mat-']:not(mat-icon),
 body [class*='mat-']:not(mat-icon) {
-  font-family: 'MontserratRegular', 'Helvetica Neue', 'Arial', sans-serif;
+  font-family: 'Average Sans', 'Helvetica Neue', 'Arial', sans-serif;
 }
 
 button {
@@ -121,7 +121,7 @@ a {
 }
 
 @include placeholder {
-  font-family: $montserrat-regular;
+  font-family: $average-sans;
   font-size: 1.6rem;
 }
 
@@ -198,7 +198,7 @@ a {
   }
 
   span {
-    font-family: $montserrat-regular;
+    font-family: $average-sans;
     font-size: 1.5rem;
 
     @include respondto(iphone5) {
@@ -207,7 +207,7 @@ a {
   }
 
   a {
-    font-family: $montserrat-bold;
+    font-family: $average-sans;
     margin-bottom: 0;
   }
 }
@@ -218,7 +218,7 @@ a {
 
   h1 {
     color: map-get($greyPalette, 'ebony-clay');
-    font-family: $pacifico-regular;
+    font-family: $average-sans;
     font-size: 2.4rem;
     margin: 0 0 1rem 0;
   }

@@ -11,9 +11,27 @@
     font-size: calc(10px + 2vmin);
     min-height: 7.6rem;
 
+    .toolbar {
+      align-items: center;
+      background-color: map-get($bluePalette, 'malibu');
+      display: flex;
+      justify-content: space-evenly;
+      position: relative;
+      height: 5rem;
+      padding: 1.5rem;
+
+      img {
+        background: $white;
+        cursor: pointer;
+        // position: absolute;
+        // top: 1rem;
+        transform: scale(1.7) translate(0, 4px);
+      }
+    }
+
     h1 {
       color: $black;
-      font-family: 'PacificoRegular';
+      font-family: 'Average Sans';
       margin: 0;
       text-align: center;
       font-size: 3rem;
@@ -21,9 +39,9 @@
 
     .links {
       display: flex;
-      justify-content: space-around;
+      justify-content: space-evenly;
       flex-direction: row;
-      padding: 0.5rem 1.5rem 1.5rem 1.5rem;
+      padding: 1.5rem;
 
       a {
         align-items: center;
@@ -34,6 +52,7 @@
         font-weight: bold;
         justify-content: center;
         text-decoration: none !important;
+        z-index: 999;
 
         span {
           line-height: 1em;

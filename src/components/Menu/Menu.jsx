@@ -4,9 +4,58 @@ import './Menu.scss';
 import HomeIcon from '@assets/icons/raw/homeIcon';
 import UserIcon from '@assets/icons/raw/userIcon';
 import ChatIcon from '@material-ui/icons/Chat';
+import mainLogo from '@assets/images/logo_single.png';
+import { makeStyles } from '@material-ui/core/styles';
+import Paper from '@material-ui/core/Paper';
+import InputBase from '@material-ui/core/InputBase';
+import IconButton from '@material-ui/core/IconButton';
+import SearchIcon from '@material-ui/icons/Search';
+import Button from '@material-ui/core/Button';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import Auth from '@services/Auth';
+import { useHistory } from 'react-router-dom';
 
-const Menu = props => {
+const useStyles = makeStyles(theme => ({
+  root: {
+    padding: '2px 4px',
+    display: 'flex',
+    alignItems: 'center',
+    width: 400
+  },
+  input: {
+    marginLeft: theme.spacing(1),
+    flex: 1
+  },
+  iconButton: {
+    padding: 0,
+    '& svg': {
+      width: '2rem',
+      height: '2rem'
+    }
+  },
+  divider: {
+    height: 28,
+    margin: 4
+  }
+}));
+
+const MenuComponent = props => {
   const { location } = props;
+  const classes = useStyles();
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  let history = useHistory();
+  const handleClick = event => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const logout = () => {
+    history.push('/logout');
+  };
 
   if (
     location.pathname === '/' ||
@@ -21,7 +70,29 @@ const Menu = props => {
   return (
     <div className='MenuWrapper'>
       <section className='menu'>
-        <h1>Socialsync</h1>
+        <div className='toolbar'>
+          <img style={{ height: '5rem' }} src={mainLogo} alt='mainLogo' />
+          <form className={classes.root} noValidate autoComplete='off'>
+            <Paper component='form' className={classes.root}>
+              <InputBase
+                style={{ fontSize: '1.6rem' }}
+                className={classes.input}
+                placeholder='Search Friends'
+                inputProps={{ 'aria-label': 'search google maps' }}
+              />
+              <IconButton type='submit' className={classes.iconButton} aria-label='search'>
+                <SearchIcon />
+              </IconButton>
+            </Paper>
+          </form>
+          <Button aria-controls='simple-menu' aria-haspopup='true' onClick={handleClick}>
+            Settings
+          </Button>
+          <Menu id='simple-menu' anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={handleClose}>
+            <MenuItem onClick={null}>Profile</MenuItem>
+            {Auth.getUser().accessToken ? <MenuItem onClick={() => logout()}>Logout</MenuItem> : null}
+          </Menu>
+        </div>
         <div className='links'>
           <NavLink to='/home' activeClassName='is-active'>
             <HomeIcon></HomeIcon>
@@ -41,4 +112,4 @@ const Menu = props => {
   );
 };
 
-export default withRouter(Menu);
+export default withRouter(MenuComponent);

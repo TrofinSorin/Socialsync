@@ -3,6 +3,8 @@
 @import 'src/styles/2mixins';
 
 .security-page {
+  background-color: map-get($bluePalette, 'malibu');
+
   .content-block {
     height: auto;
     padding: 1rem 2rem;
@@ -16,13 +18,13 @@
   }
 
   h1 {
-    font-family: $pacifico-regular;
+    font-family: $average-sans;
     font-size: 2.8rem;
     margin: 0 0 1rem 0;
   }
 
   a {
-    font-family: $montserrat-bold;
+    font-family: $average-sans;
     font-size: 1.5rem;
     margin-bottom: 2rem;
 

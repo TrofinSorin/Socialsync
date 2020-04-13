@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import './App.scss';
 import Router from './Router';
-import Menu from './components/Menu';
+import MenuComponent from './components/Menu';
 import * as usersActions from '@redux/actions/usersActions';
 import Auth from '@services/Auth';
 import { useHistory } from 'react-router-dom';
@@ -41,7 +41,7 @@ function App() {
 
   return (
     <React.Fragment>
-      <Menu></Menu>
+      <MenuComponent></MenuComponent>
       <Router></Router>
       <SnackBarComponent></SnackBarComponent>
     </React.Fragment>

@@ -9,12 +9,8 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import Img from '@shared/Images/Images';
 import userIcon from '@assets/icons/user.svg';
 import passwordIcon from '@assets/icons/lock.svg';
-import facebookIcon from '@assets/icons/facebook.svg';
 import * as usersActions from '@redux/actions/usersActions';
 import Auth from '@services/Auth';
-import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
-import GoogleLogin from 'react-google-login';
-import environment from 'environment';
 import formSerialize from 'form-serialize';
 
 const Login = props => {
@@ -45,9 +41,6 @@ const Login = props => {
         setSubmitButtonDisabled(false);
       });
   };
-
-  const responseFacebook = response => console.log('responseFacebook', response);
-  const responseGoogle = response => console.log('responseGoogle', response);
 
   return (
     <Grid container className='full-height'>
@@ -105,31 +98,6 @@ const Login = props => {
               Sign in
             </ButtonComponent>
           </form>
-
-          <Grid container>
-            <Grid item xs className='social-media-links layout-row align-items-center justify-content-center'>
-              <FacebookLogin
-                appId={environment.socialApps.facebook.appId}
-                callback={responseFacebook}
-                render={renderProps => (
-                  <button onClick={renderProps.onClick} className='social-media-link'>
-                    <Img src={facebookIcon} alt='Facebook icon' />
-                  </button>
-                )}></FacebookLogin>
-
-              <GoogleLogin
-                clientId={environment.socialApps.google.clientId}
-                render={renderProps => (
-                  <button
-                    onClick={renderProps.onClick}
-                    className='social-media-link'
-                    disabled={renderProps.disabled}></button>
-                )}
-                onSuccess={responseGoogle}
-                onFailure={responseGoogle}
-                cookiePolicy={'single_host_origin'}></GoogleLogin>
-            </Grid>
-          </Grid>
 
           <Grid container className='bottom-section'>
             <Grid item xs>
