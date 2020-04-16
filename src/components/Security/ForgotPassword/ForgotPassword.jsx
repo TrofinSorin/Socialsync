@@ -8,6 +8,8 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import Img from '@shared/Images/Images';
 import userIcon from '@assets/icons/user.svg';
 import * as usersActions from '@redux/actions/usersActions';
+import banner from '@assets/images/logo.png';
+import { Link } from 'react-router-dom';
 
 const ForgotPassword = props => {
   const [email, setEmail] = useState('');
@@ -37,10 +39,12 @@ const ForgotPassword = props => {
   return (
     <Grid container className='full-height'>
       <div className='security-page forgot-pass-bk text-center'>
+        <img with={300} height={300} src={banner} alt='banner' />
+
         <div className='content-block white-overlay'>
           <h1>Forgot password</h1>
 
-          <form onSubmit={event => onSubmitForgotPasswordHandler(event)} className='general-form'>
+          <form onSubmit={event => onSubmitForgotPasswordHandler(event)} className='general-form mb-1'>
             <TextField
               variant='outlined'
               margin='normal'
@@ -68,12 +72,14 @@ const ForgotPassword = props => {
               </ButtonComponent>
             </div>
           </form>
+          <Link to={'/login'}>Go Back to Login</Link>
+
+          {successMessage ? (
+            <div className='email-success-message content-block white-overlay'>
+              <p>We have e-mailed your password reset link!</p>
+            </div>
+          ) : null}
         </div>
-        {successMessage ? (
-          <div className='email-success-message content-block white-overlay'>
-            <p>We have e-mailed your password reset link!</p>
-          </div>
-        ) : null}
       </div>
     </Grid>
   );

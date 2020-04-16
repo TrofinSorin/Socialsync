@@ -13,11 +13,13 @@ function App() {
   let history = useHistory();
 
   const dispatch = useDispatch();
+
   const getUserOnAppRefresh = () => {
     const getUser = Auth.getUser();
 
+    console.log('Auth.getUser().accessToken:', Auth.getUser().accessToken);
     if (Auth.getUser().accessToken) {
-      dispatch(usersActions.getUser(getUser.loginUser.id))
+      dispatch(usersActions.getUser(getUser.id))
         .then(result => {
           Auth.update(result.data);
         })
@@ -27,9 +29,6 @@ function App() {
 
           window.location.reload();
         });
-    } else {
-      Auth.reset();
-      history.push('/login');
     }
   };
 

@@ -62,7 +62,8 @@ const MenuComponent = props => {
     location.pathname.match(/\/login/) ||
     location.pathname.match(/\/forgot-password/) ||
     location.pathname.match(/\/create/) ||
-    location.pathname.match(/\/logout/)
+    location.pathname.match(/\/logout/) ||
+    location.pathname.match(/\/set-password/)
   ) {
     return null;
   }
@@ -72,19 +73,17 @@ const MenuComponent = props => {
       <section className='menu'>
         <div className='toolbar'>
           <img style={{ height: '5rem' }} src={mainLogo} alt='mainLogo' />
-          <form className={classes.root} noValidate autoComplete='off'>
-            <Paper component='form' className={classes.root}>
-              <InputBase
-                style={{ fontSize: '1.6rem' }}
-                className={classes.input}
-                placeholder='Search Friends'
-                inputProps={{ 'aria-label': 'search google maps' }}
-              />
-              <IconButton type='submit' className={classes.iconButton} aria-label='search'>
-                <SearchIcon />
-              </IconButton>
-            </Paper>
-          </form>
+          <Paper component='form' className={classes.root}>
+            <InputBase
+              style={{ fontSize: '1.6rem' }}
+              className={classes.input}
+              placeholder='Search Friends'
+              inputProps={{ 'aria-label': 'search google maps' }}
+            />
+            <IconButton type='submit' className={classes.iconButton} aria-label='search'>
+              <SearchIcon />
+            </IconButton>
+          </Paper>
           <Button aria-controls='simple-menu' aria-haspopup='true' onClick={handleClick}>
             Settings
           </Button>

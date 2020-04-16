@@ -9,13 +9,13 @@ import Img from '@shared/Images/Images';
 import passwordIcon from '@assets/icons/lock.svg';
 import * as usersActions from '@redux/actions/usersActions';
 import formSerialize from 'form-serialize';
+import banner from '@assets/images/logo.png';
 
 const SetPassword = props => {
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(false);
   const dispatch = useDispatch();
   let history = useHistory();
   const id = props.match.params.id;
-  const timestamp = props.match.params.timestamp;
   const token = props.match.params.token;
 
   const onSubmitSetPasswordHandler = event => {
@@ -25,7 +25,6 @@ const SetPassword = props => {
     const setPasswordPayload = {
       id: id,
       token: token,
-      timestamp: timestamp,
       ...formSerialize(event.target, { hash: true })
     };
 
@@ -43,9 +42,9 @@ const SetPassword = props => {
 
   return (
     <Grid container className='full-height'>
-      <Link to='/' className='full-width text-center mt-1 mb-3'></Link>
-
       <div className='security-page forgot-pass-bk text-center'>
+        <img with={300} height={300} src={banner} alt='banner' />
+
         <div className='content-block white-overlay'>
           <h1>Set Password</h1>
 
@@ -93,18 +92,15 @@ const SetPassword = props => {
                 Set Password
               </ButtonComponent>
             </div>
+
+            <Link to='/' className='full-width text-center mt-1 mb-3'>
+              Go back to Login
+            </Link>
           </form>
         </div>
       </div>
     </Grid>
   );
-};
-SetPassword.propTypes = {
-  // bla: PropTypes.string,
-};
-
-SetPassword.defaultProps = {
-  // bla: 'test',
 };
 
 export default SetPassword;

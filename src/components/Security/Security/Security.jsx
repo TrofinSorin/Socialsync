@@ -12,19 +12,11 @@ const Security = ({ match }) => {
         <Route path={`${match.path}login`} component={Login} />
         <Route path={`${match.path}forgot-password`} component={ForgotPassword} />
         <Route path={`${match.path}create`} component={CreateAccount} />
-        <Route path={`${match.path}set-password/:id/:timestamp/:token`} component={SetPassword} />
+        <Route path={`${match.path}set-password/:id/:token`} component={SetPassword} />
         <Redirect to={`${match.path}login`} />
       </Switch>
     </React.Fragment>
   );
-};
-
-Security.propTypes = {
-  // bla: PropTypes.string,
-};
-
-Security.defaultProps = {
-  // bla: 'test',
 };
 
 export default Security;

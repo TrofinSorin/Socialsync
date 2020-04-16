@@ -12,6 +12,7 @@ import passwordIcon from '@assets/icons/lock.svg';
 import * as usersActions from '@redux/actions/usersActions';
 import Auth from '@services/Auth';
 import formSerialize from 'form-serialize';
+import banner from '@assets/images/logo.png';
 
 const Login = props => {
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(false);
@@ -45,6 +46,7 @@ const Login = props => {
   return (
     <Grid container className='full-height'>
       <div className='security-page sign-in-bk text-center'>
+        <img with={300} height={300} src={banner} alt='banner' />
         <div className='content-block white-overlay'>
           <h1>Sign in</h1>
 
@@ -102,7 +104,7 @@ const Login = props => {
           <Grid container className='bottom-section'>
             <Grid item xs>
               <span>Don't have an account? </span>
-              <Link to={props.type !== 'guest' ? '/create' : '/account/create'}>Create account</Link>
+              <Link to={'/create'}>Create account</Link>
             </Grid>
           </Grid>
         </div>

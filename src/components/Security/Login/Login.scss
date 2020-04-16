@@ -3,12 +3,15 @@
 @import 'src/styles/2mixins';
 
 .security-page {
-  background-color: map-get($bluePalette, 'malibu');
+  background-color: map-get($bluePalette, 'denim');
+  overflow: auto;
 
   .content-block {
     height: auto;
+    margin: 0 auto;
     padding: 1rem 2rem;
     position: relative;
+    width: 60%;
     z-index: 0;
   }
 

@@ -13,6 +13,7 @@ import passwordIcon from '@assets/icons/lock.svg';
 import * as usersActions from '@redux/actions/usersActions';
 import { useHistory } from 'react-router-dom';
 import formSerialize from 'form-serialize';
+import banner from '@assets/images/logo.png';
 
 const CreateAccount = props => {
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(false);
@@ -38,6 +39,7 @@ const CreateAccount = props => {
   return (
     <Grid container className='full-height'>
       <div className='security-page create-account-bk text-center'>
+        <img with={300} height={300} src={banner} alt='banner' />
         <div className='content-block white-overlay'>
           <h1>Create account</h1>
 
