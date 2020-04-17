@@ -48,7 +48,6 @@ axios.interceptors.response.use(
       case HTTP_CODES.OK:
         break;
       case HTTP_CODES.CREATED:
-        console.log('200 and 201', response);
         dispatch(snackbarActions.setSnackbarMessage('MESSAGE FROM SERVICE', 'success'));
 
         break;
