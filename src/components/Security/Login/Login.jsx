@@ -90,9 +90,7 @@ const Login = props => {
 
             <Grid container className='mt-1'>
               <Grid container item xs justify='flex-start' className='text-left'>
-                <Link to={props.type !== 'guest' ? '/forgot-password' : '/account/forgot-password'}>
-                  Forgot username or password?
-                </Link>
+                <Link to={'/security/forgot-password'}>Forgot username or password?</Link>
               </Grid>
             </Grid>
 
@@ -104,7 +102,7 @@ const Login = props => {
           <Grid container className='bottom-section'>
             <Grid item xs>
               <span>Don't have an account? </span>
-              <Link to={'/create'}>Create account</Link>
+              <Link to={'/security/create'}>Create account</Link>
             </Grid>
           </Grid>
         </div>

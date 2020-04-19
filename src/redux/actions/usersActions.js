@@ -70,3 +70,15 @@ export const getUsers = () => async dispatch => {
 
   return userResponse;
 };
+
+export const getUserTokenValidation = (id, token) => async dispatch => {
+  const userResponse = await api.get(`/users/password/${id}/${token}`);
+  console.log('userResponse:', userResponse);
+
+  dispatch({
+    type: types.GET_USER_VALIDATION_TOKEN,
+    payload: userResponse ? userResponse.data : null
+  });
+
+  return userResponse;
+};

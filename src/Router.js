@@ -26,8 +26,8 @@ const Router = props => (
       <Route path='/chat-room' component={ChatRoom} />
       <Route path='/profile' component={Account} />
       <Route path='/logout' component={Logout} />
-      <Route path='/' component={Security} />
-      <Redirect to='/' />
+      <Route path='/security/' component={Security} />
+      <Redirect to='/security/' />
     </Switch>
   </React.Fragment>
 );

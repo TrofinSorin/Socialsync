@@ -15,9 +15,8 @@ function App() {
   const dispatch = useDispatch();
 
   const getUserOnAppRefresh = () => {
-    const getUser = Auth.getUser();
+    const getUser = Auth.getUser().loginUser;
 
-    console.log('Auth.getUser().accessToken:', Auth.getUser().accessToken);
     if (Auth.getUser().accessToken) {
       dispatch(usersActions.getUser(getUser.id))
         .then(result => {
@@ -25,10 +24,13 @@ function App() {
         })
         .catch(err => {
           Auth.reset();
-          history.push('/login');
-
+          history.push('/security/login');
           window.location.reload();
         });
+    } else {
+      if (!window.location.pathname.includes('/security/')) {
+        history.push('/security/login');
+      }
     }
   };
 

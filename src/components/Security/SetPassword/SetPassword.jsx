@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import TextField from '@material-ui/core/TextField';
 import { Link, useHistory } from 'react-router-dom';
@@ -17,6 +17,14 @@ const SetPassword = props => {
   let history = useHistory();
   const id = props.match.params.id;
   const token = props.match.params.token;
+
+  useEffect(() => {
+    dispatch(usersActions.getUserTokenValidation(id, token))
+      .then(response => {})
+      .catch(err => {
+        history.push('/security/forgot-password');
+      });
+  }, []);
 
   const onSubmitSetPasswordHandler = event => {
     event.preventDefault();
