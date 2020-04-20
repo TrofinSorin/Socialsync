@@ -15,6 +15,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Auth from '@services/Auth';
 import { useHistory } from 'react-router-dom';
+import SettingsIcon from '@material-ui/icons/Settings';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -86,7 +87,7 @@ const MenuComponent = props => {
             </IconButton>
           </Paper>
           <Button aria-controls='simple-menu' aria-haspopup='true' onClick={handleClick}>
-            Settings
+            <SettingsIcon style={{ fontSize: '3rem' }}></SettingsIcon>
           </Button>
           <Menu id='simple-menu' anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={handleClose}>
             <MenuItem>Profile</MenuItem>

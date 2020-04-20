@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import './App.scss';
 import Router from './Router';
@@ -7,12 +7,15 @@ import * as usersActions from '@redux/actions/usersActions';
 import Auth from '@services/Auth';
 import { useHistory } from 'react-router-dom';
 import SnackBarComponent from './_shared/SnackBarComponent/SnackBarComponent';
+import ChatSidebar from './components/ChatSidebar/ChatSidebar';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import Container from 'react-bootstrap/Container';
 
 function App() {
   Auth.init();
   let history = useHistory();
-
   const dispatch = useDispatch();
+  const [drawerWidth, setDrawerWidth] = useState(null);
 
   const getUserOnAppRefresh = () => {
     const getUser = Auth.getUser().loginUser;
@@ -34,6 +37,21 @@ function App() {
     }
   };
 
+  useEffect(() => {
+    function handleResize() {
+      const drawerWidth = document.getElementsByClassName('MuiDrawer-paperAnchorDockedLeft')[0].getBoundingClientRect()
+        .width;
+
+      setDrawerWidth(drawerWidth);
+    }
+
+    handleResize();
+
+    window.addEventListener('resize', handleResize);
+
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   /*eslint-disable */
   useEffect(() => {
     getUserOnAppRefresh();
@@ -42,8 +60,16 @@ function App() {
 
   return (
     <React.Fragment>
-      <MenuComponent></MenuComponent>
-      <Router></Router>
+      <div style={{ marginLeft: drawerWidth }}>
+        <MenuComponent></MenuComponent>
+      </div>
+
+      <ChatSidebar></ChatSidebar>
+
+      <div style={{ marginLeft: drawerWidth, padding: '1rem' }}>
+        <Router></Router>
+      </div>
+
       <SnackBarComponent></SnackBarComponent>
     </React.Fragment>
   );

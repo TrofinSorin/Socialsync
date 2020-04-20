@@ -17,15 +17,15 @@
       display: flex;
       justify-content: space-evenly;
       position: relative;
-      height: 5rem;
+      height: 7rem;
+      max-height: 7rem;
       padding: 1.5rem;
 
       img {
         background: $white;
         cursor: pointer;
-        // position: absolute;
-        // top: 1rem;
-        transform: scale(1.7) translate(0, 4px);
+        height: 7rem !important;
+        width: 7rem;
       }
     }
 
