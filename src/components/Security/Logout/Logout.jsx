@@ -1,10 +1,8 @@
 import React, { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import Auth from '@services/Auth';
 import environment from 'environment';
 import { makeStyles } from '@material-ui/core/styles';
-import * as usersActions from '@redux/actions/usersActions';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -22,16 +20,13 @@ const useStyles = makeStyles(theme => ({
 const Logout = props => {
   let history = useHistory();
   const classes = useStyles();
-  const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(usersActions.logout()).then(response => {
-      Auth.signout();
+    Auth.signout();
 
-      setTimeout(() => {
-        history.push('/');
-      }, environment.logoutRedirectTimeout);
-    });
+    setTimeout(() => {
+      history.push('/');
+    }, environment.logoutRedirectTimeout);
   });
 
   return (
@@ -41,14 +36,6 @@ const Logout = props => {
       </h1>
     </div>
   );
-};
-
-Logout.propTypes = {
-  // bla: PropTypes.string,
-};
-
-Logout.defaultProps = {
-  // bla: 'test',
 };
 
 export default Logout;

@@ -87,43 +87,45 @@ const ChatRoom = props => {
       })
       .catch(err => {});
 
-    dispatch(usersActions.getUser(getUser.loginUser.id)).then(result => {
-      Auth.update(result.data);
-      setUser(result.data.data);
+    if (getUser.loginUser) {
+      dispatch(usersActions.getUser(getUser.loginUser.id)).then(result => {
+        Auth.update(result.data);
+        setUser(result.data.data);
 
-      socket.emit('login', { userId: result.data.data.id });
-      socket.emit('getOnlineUsers');
+        socket.emit('login', { userId: result.data.data.id });
+        socket.emit('getOnlineUsers');
 
-      socket.on('chat message', data => {
-        setMessages(draft => {
-          draft.push({
-            from: `${data.from}`,
-            message: data.message,
-            username: data.username,
-            thumb: data.thumb,
-            room: room
+        socket.on('chat message', data => {
+          setMessages(draft => {
+            draft.push({
+              from: `${data.from}`,
+              message: data.message,
+              username: data.username,
+              thumb: data.thumb,
+              room: room
+            });
           });
+
+          var lastMesage = document.getElementsByClassName('conversation')[0].lastChild;
+          lastMesage.scrollIntoView(false);
         });
 
-        var lastMesage = document.getElementsByClassName('conversation')[0].lastChild;
-        lastMesage.scrollIntoView(false);
-      });
+        socket.on('getOnlineUsers', data => {
+          setOnlineUsers([]);
 
-      socket.on('getOnlineUsers', data => {
-        setOnlineUsers([]);
+          const onlineUsers = [];
 
-        const onlineUsers = [];
-
-        Object.keys(data).forEach(socket => {
-          onlineUsers.push({
-            userId: data[socket],
-            socket: socket
+          Object.keys(data).forEach(socket => {
+            onlineUsers.push({
+              userId: data[socket],
+              socket: socket
+            });
           });
-        });
 
-        setOnlineUsers(onlineUsers);
+          setOnlineUsers(onlineUsers);
+        });
       });
-    });
+    }
 
     return () => socket.disconnect();
   }, []);

@@ -54,6 +54,7 @@ const MenuComponent = props => {
   };
 
   const logout = () => {
+    handleClose();
     history.push('/logout');
   };
 
@@ -88,7 +89,7 @@ const MenuComponent = props => {
             Settings
           </Button>
           <Menu id='simple-menu' anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={handleClose}>
-            <MenuItem onClick={null}>Profile</MenuItem>
+            <MenuItem>Profile</MenuItem>
             {Auth.getUser().accessToken ? <MenuItem onClick={() => logout()}>Logout</MenuItem> : null}
           </Menu>
         </div>
