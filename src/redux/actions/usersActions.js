@@ -31,7 +31,7 @@ export const forgotPassword = userData => async dispatch => {
 };
 
 export const setPassword = userData => async dispatch => {
-  const setPasswordResponse = await api.post('/users/password/set', userData);
+  const setPasswordResponse = await api.post(`/users/reset/${userData.id}/${userData.token}`, userData);
 
   dispatch({
     type: types.PASSWORD_SET_SUCCESS,

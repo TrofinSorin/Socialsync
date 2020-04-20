@@ -67,7 +67,7 @@ axios.interceptors.response.use(
       case HTTP_CODES.FORBIDDEN:
       case HTTP_CODES.NOT_FOUND:
       case HTTP_CODES.INTERNAL_SERVER_ERROR:
-        dispatch(snackbarActions.setSnackbarMessage(error.message, 'error'));
+        dispatch(snackbarActions.setSnackbarMessage(error.response.data.message || error.message, 'error'));
         break;
 
       default:

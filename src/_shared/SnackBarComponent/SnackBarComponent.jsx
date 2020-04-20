@@ -50,6 +50,7 @@ const useStyles1 = makeStyles(theme => ({
 const MySnackbarContentWrapper = props => {
   const classes = useStyles1();
   const { className, message, onClose, variant, ...other } = props;
+  console.log('message:', message);
   const Icon = variantIcon[variant];
 
   return (
@@ -80,7 +81,7 @@ const SnackBarComponent = props => {
   });
   const { vertical, horizontal, open } = snackBarState;
   const snackbarReducer = useSelector(state => state.snackbarReducer);
-  const snackbarMessage = Object.values(snackbarReducer.message)[0];
+  const snackbarMessage = snackbarReducer.message;
 
   const handleClose = () => {
     setSnackBarState({ ...snackBarState, open: false });
@@ -88,7 +89,8 @@ const SnackBarComponent = props => {
 
   /*eslint-disable */
   useEffect(() => {
-    if (snackbarReducer.message) {
+    console.log('snackbarReducer.message:', snackbarReducer.message);
+    if (snackbarReducer.message && typeof snackbarReducer.message === 'string') {
       setSnackBarState({ ...snackBarState, open: true });
     }
   }, [snackbarReducer.message]);
@@ -117,7 +119,7 @@ const SnackBarComponent = props => {
 
 MySnackbarContentWrapper.propTypes = {
   className: PropTypes.string,
-  message: PropTypes.string,
+  message: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
   onClose: PropTypes.func,
   variant: PropTypes.oneOf(['error', 'success']).isRequired
 };

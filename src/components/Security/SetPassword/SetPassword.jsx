@@ -10,6 +10,7 @@ import passwordIcon from '@assets/icons/lock.svg';
 import * as usersActions from '@redux/actions/usersActions';
 import formSerialize from 'form-serialize';
 import banner from '@assets/images/logo.png';
+import * as snackbarActions from '@redux/actions/snackbarActions';
 
 const SetPassword = props => {
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(false);
@@ -22,6 +23,13 @@ const SetPassword = props => {
     dispatch(usersActions.getUserTokenValidation(id, token))
       .then(response => {})
       .catch(err => {
+        dispatch(
+          snackbarActions.setSnackbarMessage(
+            (err && err.response && err.response.data && err.response.data.message) || err.message,
+            'error'
+          )
+        );
+
         history.push('/security/forgot-password');
       });
   }, []);
@@ -84,8 +92,8 @@ const SetPassword = props => {
               id='confirm-password'
               type='password'
               placeholder='Enter Confirm Password'
-              name='confirmPassword'
-              autoComplete='confirmPassword'
+              name='confirmpassword'
+              autoComplete='confirmpassword'
               autoFocus
               InputProps={{
                 startAdornment: (
