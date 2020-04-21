@@ -26,6 +26,7 @@ const Logout = props => {
 
     setTimeout(() => {
       history.push('/');
+      window.location.reload();
     }, environment.logoutRedirectTimeout);
   });
 

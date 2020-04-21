@@ -16,11 +16,15 @@ import Avatar from '@material-ui/core/Avatar';
 import Badge from '@material-ui/core/Badge';
 import Tooltip from '@material-ui/core/Tooltip';
 import Grid from '@material-ui/core/Grid';
+import useSocket from 'use-socket.io-client';
+import formSerialize from 'form-serialize';
+import { useImmer } from 'use-immer';
+import './ChatSidebar.scss';
 
 const StyledBadge = withStyles(theme => ({
   badge: {
-    backgroundColor: '#44b700',
-    color: '#44b700',
+    backgroundColor: props => props.colorstatus,
+    color: props => props.colorstatus,
     boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
     '&::after': {
       position: 'absolute',
@@ -116,10 +120,23 @@ const ChatSidebar = props => {
   const classes = useStyles();
   const theme = useTheme();
   const chatbarReducer = useSelector(state => state.chatbarReducer);
+  const userReducer = useSelector(state => state.usersReducer);
   const chatbarState = chatbarReducer.opened;
   const [users, setUsers] = useState([]);
   const [userLoader, setUserLoader] = useState(false);
+  const [user, setUser] = useState({});
+  const [userSelected, setUserSelected] = useState({});
+  const [room, setRoom] = useState('');
+  const [messages, setMessages] = useImmer([]);
+  const [socket] = useSocket('http://localhost:8001', {
+    autoConnect: false
+  });
+  const [onlineUsers, setOnlineUsers] = useState([]);
+  const [onlineUsersToShow, setOnlineUsersToShow] = useState([]);
 
+  socket.connect();
+
+  /*eslint-disable */
   useEffect(() => {
     dispatch(usersActions.getUsers())
       .then(result => {
@@ -127,15 +144,152 @@ const ChatSidebar = props => {
         setUserLoader(false);
       })
       .catch(err => {});
+
+    return () => socket.disconnect();
   }, []);
+  /*eslint-enable */
 
   const setChatbarState = state => {
-    console.log('state:', state);
     dispatch(chatbarActions.toggleSidebarState(state));
   };
 
+  const setUserSelectedHandler = user => {
+    setUserSelected(user);
+
+    setChatbarState(true);
+  };
+
+  useEffect(() => {
+    if (userReducer.data && Object.keys(userReducer.data).length > 0) {
+      setUser(userReducer.data);
+
+      socket.emit('login', { userId: userReducer.data.id });
+      socket.emit('getOnlineUsers');
+
+      socket.on('chat message', data => {
+        setMessages(draft => {
+          draft.push({
+            from: `${data.from}`,
+            message: data.message,
+            username: data.username,
+            thumb: data.thumb,
+            room: room
+          });
+        });
+
+        var lastMesage = document.getElementsByClassName('conversation')[0].lastChild;
+        lastMesage.scrollIntoView(false);
+      });
+
+      socket.on('getOnlineUsers', data => {
+        setOnlineUsers([]);
+
+        const onlineUsers = [];
+
+        Object.keys(data).forEach(socket => {
+          onlineUsers.push({
+            userId: data[socket],
+            socket: socket
+          });
+        });
+
+        setOnlineUsers(onlineUsers);
+      });
+
+      socket.on('disconnect', data => {
+        console.log('data:', data);
+        socket.emit('getOnlineUsers');
+      });
+    }
+  }, [userReducer.data]);
+
+  /*eslint-disable */
+  useEffect(() => {
+    const onlineUsersArray = [];
+    const usersArray = Object.assign([], users);
+
+    onlineUsersArray.push(...onlineUsers);
+
+    usersArray.forEach(user => {
+      onlineUsersArray.forEach(onlineUser => {
+        if (onlineUser.userId === user.id) {
+          onlineUser.username = user.username;
+          onlineUser.nickname = `${user.firstname} ${user.lastname}`;
+          onlineUser = { ...onlineUser, user };
+        }
+      });
+    });
+
+    const filteredArray = onlineUsersArray.filter(function(value, index) {
+      return onlineUsers.indexOf(value) === index;
+    });
+
+    setOnlineUsersToShow([...new Set(filteredArray)]);
+  }, [onlineUsers]);
+  /*eslint-enable */
+
+  /*eslint-disable */
+  useEffect(() => {
+    if (onlineUsersToShow.length && users.length) {
+      const usersArray = Object.assign([], users);
+      const onlineUsersToShowArray = Object.assign([], onlineUsersToShow);
+
+      usersArray.forEach(user => {
+        onlineUsersToShowArray.forEach(onlineUser => {
+          if (user.id === onlineUser.userId) {
+            user.online = true;
+            user.socket = onlineUser.socket;
+          } else {
+            user.online = false;
+          }
+        });
+      });
+
+      console.log('forEachusersArray:', usersArray);
+      console.log('onlineUsersToShow:', onlineUsersToShow);
+      setUsers([...usersArray]);
+    }
+  }, [onlineUsersToShow]);
+  /*eslint-enable */
+
+  const joinRoom = e => {
+    e.preventDefault();
+
+    const formData = formSerialize(e.target, { hash: true });
+
+    socket.emit('createRoom', formData.room);
+    setRoom(formData.room);
+  };
+
+  const sendThumb = () => {
+    socket.emit('chat message', {
+      username: user.username,
+      message: '',
+      from: `${user.firstname} ${user.lastname}`,
+      thumb: true
+    });
+  };
+
+  const submitMessageHandler = e => {
+    e.preventDefault();
+
+    const messageForm = formSerialize(e.target, { hash: true });
+
+    socket.emit('chat message', {
+      username: user.username,
+      message: messageForm.message,
+      from: `${user.firstname} ${user.lastname}`,
+      thumb: false,
+      room: room
+    });
+
+    e.target.reset();
+  };
+
   return (
-    <div className='ChatSidebarWrapper'>
+    <div
+      style={{ position: chatbarState ? 'fixed' : 'initial', zIndex: chatbarState ? '1000' : '1' }}
+      className='ChatSidebarWrapper'>
       <Drawer
         variant='permanent'
         className={clsx(classes.drawer, {
@@ -157,7 +311,16 @@ const ChatSidebar = props => {
         ) : (
           <>
             <div className={classes.toolbar}>
-              <h2>Chat Sidebar</h2>
+              {Object.keys(userSelected).length > 0 ? (
+                <>
+                  <Avatar src={userSelected.avatar} name={userSelected.firstname} size={50} round='50px' />
+                  <h2>
+                    {userSelected.firstname} {userSelected.lastname}
+                  </h2>
+                </>
+              ) : (
+                <h2>Chat Sidebar</h2>
+              )}
               <IconButton style={{ fontSize: '3rem' }} onClick={() => setChatbarState(false)}>
                 {theme.direction === 'ltl' ? (
                   <ChevronRightIcon style={{ fontSize: '3rem' }} />
@@ -171,7 +334,7 @@ const ChatSidebar = props => {
         {userLoader ? (
           <Loader></Loader>
         ) : (
-          <Grid style={{ height: '100%' }} container>
+          <Grid style={{ height: '92%', flexWrap: 'nowrap' }} container>
             <Grid style={{ height: '100%' }} item xs={chatbarState ? 3 : 12}>
               <List style={{ backgroundColor: '#F7F7F7', height: '100%', padding: '0' }}>
                 {users.map((user, index) => (
@@ -185,11 +348,12 @@ const ChatSidebar = props => {
                       <StyledBadge
                         style={{ cursor: 'pointer', color: 'red' }}
                         overlap='circle'
+                        colorstatus={!user.online ? 'gray' : '#44b700'}
                         anchorOrigin={{
                           vertical: 'bottom',
                           horizontal: 'right'
                         }}
-                        onClick={() => setChatbarState(true)}
+                        onClick={() => setUserSelectedHandler(user)}
                         variant='dot'>
                         <Avatar
                           style={{ backgroundColor: '#FF5722' }}
@@ -205,8 +369,34 @@ const ChatSidebar = props => {
             </Grid>
 
             {chatbarState ? (
-              <Grid item>
-                <p>Chat</p>
+              <Grid xs={12} item>
+                <div className='screen'>
+                  <div className='conversation'>
+                    {messages.map((messageData, index) => (
+                      <div
+                        style={{ display: 'flex', alignItems: 'center' }}
+                        key={index}
+                        className={
+                          user.username !== messageData.username ? 'messages--received' : `messages--sent messages`
+                        }>
+                        <span style={{ marginRight: '1rem' }}>
+                          {messageData.from === `${user.firstname} ${user.lastname}` ? 'You' : messageData.from}
+                        </span>
+                        <div className={messageData.thumb === true ? 'message--thumb thumb anim-wiggle' : ` message`}>
+                          <span>{messageData.message}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className='text-bar'>
+                    <form onSubmit={event => submitMessageHandler(event)} className='text-bar__field' id='form-message'>
+                      <input type='text' name='message' placeholder='Type or thumb up ;)' autoComplete='off' />
+                    </form>
+                    <div onClick={() => sendThumb()} className='text-bar__thumb'>
+                      <div className='thumb'></div>
+                    </div>
+                  </div>
+                </div>
               </Grid>
             ) : null}
           </Grid>

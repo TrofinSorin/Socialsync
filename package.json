@@ -19,6 +19,7 @@
     "normalize.css": "^8.0.1",
     "prettier": "^1.19.1",
     "react": "^16.13.1",
+    "react-app-polyfill": "^1.0.6",
     "react-avatar": "^3.9.2",
     "react-bootstrap": "^1.0.0",
     "react-dom": "^16.13.1",
@@ -53,12 +54,14 @@
     "production": [
       ">0.2%",
       "not dead",
-      "not op_mini all"
+      "not op_mini all",
+      "ie 11"
     ],
     "development": [
       "last 1 chrome version",
       "last 1 firefox version",
-      "last 1 safari version"
+      "last 1 safari version",
+      "ie 11"
     ]
   },
   "devDependencies": {

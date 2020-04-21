@@ -17,7 +17,6 @@ const ChatRoom = props => {
     //any other options
   });
 
-  socket.connect();
   const [users, setUsers] = useState([]);
   const [userLoader, setUserLoader] = useState(false);
   const [messages, setMessages] = useImmer([]);
@@ -126,8 +125,6 @@ const ChatRoom = props => {
         });
       });
     }
-
-    return () => socket.disconnect();
   }, []);
   /*eslint-enable */
 
