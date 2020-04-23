@@ -14,7 +14,7 @@ function usersReducer(state = initialState, action) {
 
       return {
         ...state,
-        ...payload
+        user: payload.data.userMessage.loginUser
       };
 
     case types.CREATE_USER:
@@ -38,7 +38,7 @@ function usersReducer(state = initialState, action) {
     case types.GET_USER_SUCCESS:
       return {
         ...state,
-        ...payload
+        user: payload.data
       };
 
     default:

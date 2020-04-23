@@ -149,21 +149,12 @@ const ChatSidebar = props => {
   }, []);
   /*eslint-enable */
 
-  const setChatbarState = state => {
-    dispatch(chatbarActions.toggleSidebarState(state));
-  };
-
-  const setUserSelectedHandler = user => {
-    setUserSelected(user);
-
-    setChatbarState(true);
-  };
-
   useEffect(() => {
-    if (userReducer.data && Object.keys(userReducer.data).length > 0) {
-      setUser(userReducer.data);
+    if (userReducer.user && Object.keys(userReducer.user).length > 0) {
+      setUser(userReducer.user);
 
-      socket.emit('login', { userId: userReducer.data.id });
+      console.log('userReducer.user.id:', userReducer.user.id);
+      socket.emit('login', { userId: userReducer.user.id });
       socket.emit('getOnlineUsers');
 
       socket.on('chat message', data => {
@@ -201,7 +192,19 @@ const ChatSidebar = props => {
         socket.emit('getOnlineUsers');
       });
     }
-  }, [userReducer.data]);
+
+    console.log('userReducer.user:', userReducer.user);
+  }, [userReducer.user]);
+
+  const setChatbarState = state => {
+    dispatch(chatbarActions.toggleSidebarState(state));
+  };
+
+  const setUserSelectedHandler = user => {
+    setUserSelected(user);
+
+    setChatbarState(true);
+  };
 
   /*eslint-disable */
   useEffect(() => {
@@ -215,7 +218,6 @@ const ChatSidebar = props => {
         if (onlineUser.userId === user.id) {
           onlineUser.username = user.username;
           onlineUser.nickname = `${user.firstname} ${user.lastname}`;
-          onlineUser = { ...onlineUser, user };
         }
       });
     });
@@ -235,15 +237,23 @@ const ChatSidebar = props => {
       const onlineUsersToShowArray = Object.assign([], onlineUsersToShow);
 
       usersArray.forEach(user => {
-        onlineUsersToShowArray.forEach(onlineUser => {
-          if (user.id === onlineUser.userId) {
-            user.online = true;
-            user.socket = onlineUser.socket;
-          } else {
-            user.online = false;
-          }
-        });
+        const onlineUserFound = onlineUsersToShowArray.find(onlineUser => user.id === onlineUser.userId);
+        if (onlineUserFound && user.id === onlineUserFound.userId) {
+          console.log('onlineUserFound:', onlineUserFound);
+          user.online = true;
+        } else {
+          user.online = false;
+        }
       });
+      // usersArray.forEach(user => {
+      //   console.log('user', user);
+
+      //   onlineUsersToShowArray.forEach(onlineUser => {
+      //     console.log('onlineUser:', onlineUser);
+      //     user.online = user.id === onlineUser.userId;
+      //     user.socket = onlineUser.socket;
+      //   });
+      // });
 
       console.log('forEachusersArray:', usersArray);
       console.log('onlineUsersToShow:', onlineUsersToShow);
