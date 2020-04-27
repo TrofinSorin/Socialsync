@@ -126,13 +126,13 @@ const ChatSidebar = props => {
   const [userLoader, setUserLoader] = useState(false);
   const [user, setUser] = useState({});
   const [userSelected, setUserSelected] = useState({});
-  const [room, setRoom] = useState('');
   const [messages, setMessages] = useImmer([]);
   const [socket] = useSocket('http://localhost:8001', {
     autoConnect: false
   });
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [onlineUsersToShow, setOnlineUsersToShow] = useState([]);
+  const [sidebarUsers, setSidebarUsers] = useState([]);
 
   socket.connect();
 
@@ -149,27 +149,37 @@ const ChatSidebar = props => {
   }, []);
   /*eslint-enable */
 
+  /*eslint-disable */
   useEffect(() => {
     if (userReducer.user && Object.keys(userReducer.user).length > 0) {
-      setUser(userReducer.user);
+      const settedUser = Object.assign({}, userReducer.user);
+      settedUser.socket = socket.io.engine.id;
+      settedUser.online = true;
 
-      console.log('userReducer.user.id:', userReducer.user.id);
-      socket.emit('login', { userId: userReducer.user.id });
+      setUser(settedUser);
+
+      socket.emit('login', { userId: settedUser.id });
       socket.emit('getOnlineUsers');
 
       socket.on('chat message', data => {
+        console.log('chat message data:', data);
         setMessages(draft => {
           draft.push({
             from: `${data.from}`,
             message: data.message,
             username: data.username,
-            thumb: data.thumb,
-            room: room
+            thumb: data.thumb
           });
         });
 
-        var lastMesage = document.getElementsByClassName('conversation')[0].lastChild;
-        lastMesage.scrollIntoView(false);
+        if (settedUser.id !== data.fromUser.id) {
+          setUserSelected(data.fromUser);
+        }
+
+        setChatbarState(true);
+
+        var lastMesage = document.getElementsByClassName('conversation')[0];
+        lastMesage && lastMesage.lastChild.scrollIntoView(false);
       });
 
       socket.on('getOnlineUsers', data => {
@@ -188,13 +198,11 @@ const ChatSidebar = props => {
       });
 
       socket.on('disconnect', data => {
-        console.log('data:', data);
         socket.emit('getOnlineUsers');
       });
     }
-
-    console.log('userReducer.user:', userReducer.user);
   }, [userReducer.user]);
+  /*eslint-enable */
 
   const setChatbarState = state => {
     dispatch(chatbarActions.toggleSidebarState(state));
@@ -236,40 +244,24 @@ const ChatSidebar = props => {
       const usersArray = Object.assign([], users);
       const onlineUsersToShowArray = Object.assign([], onlineUsersToShow);
 
-      usersArray.forEach(user => {
-        const onlineUserFound = onlineUsersToShowArray.find(onlineUser => user.id === onlineUser.userId);
-        if (onlineUserFound && user.id === onlineUserFound.userId) {
-          console.log('onlineUserFound:', onlineUserFound);
-          user.online = true;
+      usersArray.forEach(userItem => {
+        const onlineUserFound = onlineUsersToShowArray.find(onlineUser => userItem.id === onlineUser.userId);
+        if (onlineUserFound && userItem.id === onlineUserFound.userId) {
+          userItem.socket = onlineUserFound.socket;
+          userItem.online = true;
         } else {
-          user.online = false;
+          userItem.online = false;
+          userItem.socket = '';
         }
       });
-      // usersArray.forEach(user => {
-      //   console.log('user', user);
 
-      //   onlineUsersToShowArray.forEach(onlineUser => {
-      //     console.log('onlineUser:', onlineUser);
-      //     user.online = user.id === onlineUser.userId;
-      //     user.socket = onlineUser.socket;
-      //   });
-      // });
+      const onlineUsersArray = usersArray.filter(onlineUser => onlineUser.id !== user.id);
 
-      console.log('forEachusersArray:', usersArray);
-      console.log('onlineUsersToShow:', onlineUsersToShow);
-      setUsers([...usersArray]);
+      setUsers([...onlineUsersArray]);
+      setSidebarUsers([...onlineUsersArray]);
     }
   }, [onlineUsersToShow]);
   /*eslint-enable */
-
-  const joinRoom = e => {
-    e.preventDefault();
-
-    const formData = formSerialize(e.target, { hash: true });
-
-    socket.emit('createRoom', formData.room);
-    setRoom(formData.room);
-  };
 
   const sendThumb = () => {
     socket.emit('chat message', {
@@ -290,8 +282,11 @@ const ChatSidebar = props => {
       message: messageForm.message,
       from: `${user.firstname} ${user.lastname}`,
       thumb: false,
-      room: room
+      to: userSelected.socket,
+      fromSocket: user.socket,
+      fromUser: user
     });
+    console.log('submitMessageHandleruser', userSelected.to, user.socket);
 
     e.target.reset();
   };
@@ -347,34 +342,39 @@ const ChatSidebar = props => {
           <Grid style={{ height: '92%', flexWrap: 'nowrap' }} container>
             <Grid style={{ height: '100%' }} item xs={chatbarState ? 3 : 12}>
               <List style={{ backgroundColor: '#F7F7F7', height: '100%', padding: '0' }}>
-                {users.map((user, index) => (
-                  <ListItem className={classes.listItem} key={user.id}>
-                    <Tooltip
-                      title={
-                        <span
-                          style={{ fontSize: '1.3rem', padding: '1rem' }}>{`${user.firstname} ${user.lastname}`}</span>
-                      }
-                      placement='right'>
-                      <StyledBadge
-                        style={{ cursor: 'pointer', color: 'red' }}
-                        overlap='circle'
-                        colorstatus={!user.online ? 'gray' : '#44b700'}
-                        anchorOrigin={{
-                          vertical: 'bottom',
-                          horizontal: 'right'
-                        }}
-                        onClick={() => setUserSelectedHandler(user)}
-                        variant='dot'>
-                        <Avatar
-                          style={{ backgroundColor: '#FF5722' }}
-                          alt={user.firstname}
-                          src={user.avatar ? user.avatar : null}>
-                          {user.firstname.charAt(0) + user.lastname.charAt(0)}
-                        </Avatar>
-                      </StyledBadge>
-                    </Tooltip>
-                  </ListItem>
-                ))}
+                {sidebarUsers
+                  .sort((a, b) => b.online - a.online)
+                  .map((user, index) => (
+                    <ListItem className={classes.listItem} key={user.id}>
+                      <Tooltip
+                        title={
+                          <span
+                            style={{
+                              fontSize: '1.3rem',
+                              padding: '1rem'
+                            }}>{`${user.firstname} ${user.lastname}`}</span>
+                        }
+                        placement='right'>
+                        <StyledBadge
+                          style={{ cursor: 'pointer', color: 'red' }}
+                          overlap='circle'
+                          colorstatus={!user.online ? 'gray' : '#44b700'}
+                          anchorOrigin={{
+                            vertical: 'bottom',
+                            horizontal: 'right'
+                          }}
+                          onClick={() => setUserSelectedHandler(user)}
+                          variant='dot'>
+                          <Avatar
+                            style={{ backgroundColor: '#FF5722' }}
+                            alt={user.firstname}
+                            src={user.avatar ? user.avatar : null}>
+                            {user.firstname.charAt(0) + user.lastname.charAt(0)}
+                          </Avatar>
+                        </StyledBadge>
+                      </Tooltip>
+                    </ListItem>
+                  ))}
               </List>
             </Grid>
 

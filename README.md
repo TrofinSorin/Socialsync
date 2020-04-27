@@ -1,3 +1,3 @@
-# Socialsync
+# Socialsyncs
 
-Socialsync APP
+Socialsyncs APP

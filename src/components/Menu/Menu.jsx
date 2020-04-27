@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { withRouter, NavLink } from 'react-router-dom';
 import './Menu.scss';
 import HomeIcon from '@assets/icons/raw/homeIcon';
@@ -16,6 +16,8 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Auth from '@services/Auth';
 import { useHistory } from 'react-router-dom';
 import SettingsIcon from '@material-ui/icons/Settings';
+import { Avatar } from '@material-ui/core';
+import { useSelector, useDispatch } from 'react-redux';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -46,6 +48,8 @@ const MenuComponent = props => {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
   let history = useHistory();
+  const { user } = useSelector(state => state.usersReducer);
+
   const handleClick = event => {
     setAnchorEl(event.currentTarget);
   };
@@ -87,7 +91,16 @@ const MenuComponent = props => {
             </IconButton>
           </Paper>
           <Button aria-controls='simple-menu' aria-haspopup='true' onClick={handleClick}>
-            <SettingsIcon style={{ fontSize: '3rem' }}></SettingsIcon>
+            {Object.keys(user).length > 0 ? (
+              <Avatar
+                style={{ backgroundColor: '#FF5722' }}
+                alt={user.firstname}
+                src={user.avatar ? user.avatar : null}>
+                {user.firstname.charAt(0) + user.lastname.charAt(0)}
+              </Avatar>
+            ) : (
+              ''
+            )}
           </Button>
           <Menu id='simple-menu' anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={handleClose}>
             <MenuItem>Profile</MenuItem>

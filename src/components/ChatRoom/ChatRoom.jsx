@@ -13,7 +13,8 @@ import Avatar from 'react-avatar';
 const ChatRoom = props => {
   const dispatch = useDispatch();
   const [socket] = useSocket('http://localhost:8001', {
-    autoConnect: false
+    autoConnect: false,
+    reconnection: true
     //any other options
   });
 
