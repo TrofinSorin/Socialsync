@@ -11,6 +11,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import * as chatbarActions from '@redux/actions/chatbarActions';
 import MenuIcon from '@material-ui/icons/Menu';
 import * as usersActions from '@redux/actions/usersActions';
+import * as messageActions from '@redux/actions/messageActions';
 import Loader from '../../_shared/Loader/Loader';
 import Avatar from '@material-ui/core/Avatar';
 import Badge from '@material-ui/core/Badge';
@@ -121,6 +122,7 @@ const ChatSidebar = props => {
   const theme = useTheme();
   const chatbarReducer = useSelector(state => state.chatbarReducer);
   const userReducer = useSelector(state => state.usersReducer);
+  const messagesReducer = useSelector(state => state.messagesReducer);
   const chatbarState = chatbarReducer.opened;
   const [users, setUsers] = useState([]);
   const [userLoader, setUserLoader] = useState(false);
@@ -172,6 +174,9 @@ const ChatSidebar = props => {
           });
         });
 
+        console.log('settedUser.id:', settedUser.id);
+        console.log('data.data.id:', data);
+
         if (settedUser.id !== data.fromUser.id) {
           setUserSelected(data.fromUser);
         }
@@ -209,6 +214,7 @@ const ChatSidebar = props => {
   };
 
   const setUserSelectedHandler = user => {
+    console.log('setUserSelectedHandleruser:', user);
     setUserSelected(user);
 
     setChatbarState(true);
@@ -277,6 +283,21 @@ const ChatSidebar = props => {
 
     const messageForm = formSerialize(e.target, { hash: true });
 
+    const payload = {
+      username: user.username,
+      text: messageForm.message,
+      from: `${user.firstname} ${user.lastname}`,
+      thumb: false,
+      toUserId: userSelected.id,
+      fromUserId: user.id,
+      status: ['unread']
+    };
+
+    dispatch(messageActions.addMessage(payload)).then(response => {
+      console.log('messageForm:', messageForm);
+      console.log('response:', response);
+    });
+
     socket.emit('chat message', {
       username: user.username,
       message: messageForm.message,
@@ -286,6 +307,7 @@ const ChatSidebar = props => {
       fromSocket: user.socket,
       fromUser: user
     });
+
     console.log('submitMessageHandleruser', userSelected.to, user.socket);
 
     e.target.reset();
