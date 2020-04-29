@@ -304,6 +304,7 @@ const ChatSidebar = props => {
       from: `${user.firstname} ${user.lastname}`,
       thumb: false,
       to: userSelected.socket,
+      toUser: userSelected,
       fromSocket: user.socket,
       fromUser: user
     });
