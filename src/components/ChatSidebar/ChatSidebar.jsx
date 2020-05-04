@@ -19,7 +19,6 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Grid from '@material-ui/core/Grid';
 import useSocket from 'use-socket.io-client';
 import formSerialize from 'form-serialize';
-import { useImmer } from 'use-immer';
 import './ChatSidebar.scss';
 
 const StyledBadge = withStyles(theme => ({
@@ -128,12 +127,10 @@ const ChatSidebar = props => {
   const [userLoader, setUserLoader] = useState(false);
   const [user, setUser] = useState({});
   const [userSelected, setUserSelected] = useState({});
-  const [messages, setMessages] = useImmer([]);
   const [socket] = useSocket('http://localhost:8001', {
     autoConnect: false
   });
   const [onlineUsers, setOnlineUsers] = useState([]);
-  const [onlineUsersToShow, setOnlineUsersToShow] = useState([]);
   const [sidebarUsers, setSidebarUsers] = useState([]);
 
   socket.connect();
@@ -155,36 +152,23 @@ const ChatSidebar = props => {
   useEffect(() => {
     if (userReducer.user && Object.keys(userReducer.user).length > 0) {
       const settedUser = Object.assign({}, userReducer.user);
-      settedUser.socket = socket.io.engine.id;
       settedUser.online = true;
-
       setUser(settedUser);
 
       socket.emit('login', { userId: settedUser.id });
       socket.emit('getOnlineUsers');
 
       socket.on('chat message', data => {
-        console.log('chat message data:', data);
-        setMessages(draft => {
-          draft.push({
-            from: `${data.from}`,
-            message: data.message,
-            username: data.username,
-            thumb: data.thumb
-          });
-        });
-
-        console.log('settedUser.id:', settedUser.id);
-        console.log('data.data.id:', data);
+        dispatch(messageActions.addMessageInConversation(data.responseMessage));
 
         if (settedUser.id !== data.fromUser.id) {
+          console.log('data.fromUser:', data.fromUser);
           setUserSelected(data.fromUser);
         }
 
         setChatbarState(true);
 
-        var lastMesage = document.getElementsByClassName('conversation')[0];
-        lastMesage && lastMesage.lastChild.scrollIntoView(false);
+        focusOnLastMessage();
       });
 
       socket.on('getOnlineUsers', data => {
@@ -192,14 +176,21 @@ const ChatSidebar = props => {
 
         const onlineUsers = [];
 
-        Object.keys(data).forEach(socket => {
+        Object.keys(data).forEach(item => {
           onlineUsers.push({
-            userId: data[socket],
-            socket: socket
+            userId: item,
+            socket: data[item]
           });
         });
 
         setOnlineUsers(onlineUsers);
+      });
+
+      socket.on('receiveMessages', data => {
+        console.log('data:', data);
+        dispatch(messageActions.getConversationMessages(data));
+
+        focusOnLastMessage();
       });
 
       socket.on('disconnect', data => {
@@ -209,65 +200,45 @@ const ChatSidebar = props => {
   }, [userReducer.user]);
   /*eslint-enable */
 
-  const setChatbarState = state => {
-    dispatch(chatbarActions.toggleSidebarState(state));
-  };
-
-  const setUserSelectedHandler = user => {
-    console.log('setUserSelectedHandleruser:', user);
-    setUserSelected(user);
-
-    setChatbarState(true);
-  };
-
   /*eslint-disable */
   useEffect(() => {
-    const onlineUsersArray = [];
-    const usersArray = Object.assign([], users);
-
-    onlineUsersArray.push(...onlineUsers);
-
-    usersArray.forEach(user => {
-      onlineUsersArray.forEach(onlineUser => {
-        if (onlineUser.userId === user.id) {
-          onlineUser.username = user.username;
-          onlineUser.nickname = `${user.firstname} ${user.lastname}`;
-        }
-      });
-    });
-
-    const filteredArray = onlineUsersArray.filter(function(value, index) {
-      return onlineUsers.indexOf(value) === index;
-    });
-
-    setOnlineUsersToShow([...new Set(filteredArray)]);
-  }, [onlineUsers]);
-  /*eslint-enable */
-
-  /*eslint-disable */
-  useEffect(() => {
-    if (onlineUsersToShow.length && users.length) {
+    if (onlineUsers.length && users.length) {
       const usersArray = Object.assign([], users);
-      const onlineUsersToShowArray = Object.assign([], onlineUsersToShow);
+      const onlineUsersToShowArray = Object.assign([], onlineUsers);
 
       usersArray.forEach(userItem => {
-        const onlineUserFound = onlineUsersToShowArray.find(onlineUser => userItem.id === onlineUser.userId);
-        if (onlineUserFound && userItem.id === onlineUserFound.userId) {
-          userItem.socket = onlineUserFound.socket;
+        const onlineUserFound = onlineUsersToShowArray.find(onlineUser => +userItem.id === +onlineUser.userId);
+
+        if (onlineUserFound && +userItem.id === +onlineUserFound.userId) {
           userItem.online = true;
         } else {
           userItem.online = false;
-          userItem.socket = '';
         }
       });
 
       const onlineUsersArray = usersArray.filter(onlineUser => onlineUser.id !== user.id);
 
-      setUsers([...onlineUsersArray]);
-      setSidebarUsers([...onlineUsersArray]);
+      setSidebarUsers([...new Set(onlineUsersArray)]);
     }
-  }, [onlineUsersToShow]);
+  }, [onlineUsers]);
   /*eslint-enable */
+
+  const setChatbarState = state => {
+    dispatch(chatbarActions.toggleSidebarState(state));
+  };
+
+  const setUserSelectedHandler = userSelected => {
+    console.log('setUserSelectedHandleruser:', userSelected);
+    setUserSelected(userSelected);
+    socket.emit('getMessages', { fromId: user.id, toId: userSelected.id });
+
+    setChatbarState(true);
+  };
+
+  const focusOnLastMessage = () => {
+    var lastMesage = document.getElementsByClassName('conversation')[0];
+    lastMesage.lastChild && lastMesage.lastChild.scrollIntoView(false);
+  };
 
   const sendThumb = () => {
     socket.emit('chat message', {
@@ -282,7 +253,6 @@ const ChatSidebar = props => {
     e.preventDefault();
 
     const messageForm = formSerialize(e.target, { hash: true });
-
     const payload = {
       username: user.username,
       text: messageForm.message,
@@ -294,22 +264,15 @@ const ChatSidebar = props => {
     };
 
     dispatch(messageActions.addMessage(payload)).then(response => {
-      console.log('messageForm:', messageForm);
-      console.log('response:', response);
-    });
+      payload.toUser = userSelected;
+      payload.fromUser = user;
+      payload.responseMessage = response;
 
-    socket.emit('chat message', {
-      username: user.username,
-      message: messageForm.message,
-      from: `${user.firstname} ${user.lastname}`,
-      thumb: false,
-      to: userSelected.socket,
-      toUser: userSelected,
-      fromSocket: user.socket,
-      fromUser: user
-    });
+      socket.emit('chat message', payload);
 
-    console.log('submitMessageHandleruser', userSelected.to, user.socket);
+      console.log('submitMessageHandleruser', user);
+      console.log('userSelected:', userSelected);
+    });
 
     e.target.reset();
   };
@@ -405,21 +368,25 @@ const ChatSidebar = props => {
               <Grid xs={12} item>
                 <div className='screen'>
                   <div className='conversation'>
-                    {messages.map((messageData, index) => (
-                      <div
-                        style={{ display: 'flex', alignItems: 'center' }}
-                        key={index}
-                        className={
-                          user.username !== messageData.username ? 'messages--received' : `messages--sent messages`
-                        }>
-                        <span style={{ marginRight: '1rem' }}>
-                          {messageData.from === `${user.firstname} ${user.lastname}` ? 'You' : messageData.from}
-                        </span>
-                        <div className={messageData.thumb === true ? 'message--thumb thumb anim-wiggle' : ` message`}>
-                          <span>{messageData.message}</span>
+                    {messagesReducer.messages.length > 0 ? (
+                      messagesReducer.messages.map((messageData, index) => (
+                        <div
+                          style={{ display: 'flex', alignItems: 'center' }}
+                          key={index}
+                          className={
+                            user.username !== messageData.username ? 'messages--received' : `messages--sent messages`
+                          }>
+                          <span style={{ marginRight: '1rem' }}>
+                            {messageData.from === `${user.firstname} ${user.lastname}` ? 'You' : messageData.from}
+                          </span>
+                          <div className={messageData.thumb === true ? 'message--thumb thumb anim-wiggle' : ` message`}>
+                            <span>{messageData.text}</span>
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      ))
+                    ) : (
+                      <p>Send a message</p>
+                    )}
                   </div>
                   <div className='text-bar'>
                     <form onSubmit={event => submitMessageHandler(event)} className='text-bar__field' id='form-message'>
