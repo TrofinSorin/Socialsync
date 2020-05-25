@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useLayoutEffect } from 'react';
 import clsx from 'clsx';
 import { makeStyles, useTheme, withStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
@@ -20,6 +20,8 @@ import Grid from '@material-ui/core/Grid';
 import useSocket from 'use-socket.io-client';
 import formSerialize from 'form-serialize';
 import './ChatSidebar.scss';
+import InfiniteScrollReverse from 'react-infinite-scroll-reverse';
+import Messages from './Messages/Messages';
 
 const StyledBadge = withStyles(theme => ({
   badge: {
@@ -132,7 +134,10 @@ const ChatSidebar = props => {
   });
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [sidebarUsers, setSidebarUsers] = useState([]);
-
+  const [messagesLoader, setMessagesLoader] = useState([false]);
+  const [page, setPage] = useState(-1);
+  const [hasMore, setHasMore] = useState(true);
+  const isFirstRun = useRef(true);
   socket.connect();
 
   /*eslint-disable */
@@ -162,8 +167,11 @@ const ChatSidebar = props => {
         dispatch(messageActions.addMessageInConversation(data.responseMessage));
 
         if (settedUser.id !== data.fromUser.id) {
-          console.log('data.fromUser:', data.fromUser);
+          setMessagesLoader(true);
+          socket.emit('getMessages', { fromId: settedUser.id, toId: data.fromUser.id });
           setUserSelected(data.fromUser);
+
+          console.log('userSElected', userSelected);
         }
 
         setChatbarState(true);
@@ -187,10 +195,22 @@ const ChatSidebar = props => {
       });
 
       socket.on('receiveMessages', data => {
-        console.log('data:', data);
-        dispatch(messageActions.getConversationMessages(data));
+        if (data) {
+          console.log('receiveMessages data:', data);
 
-        focusOnLastMessage();
+          setMessagesLoader(false);
+          dispatch(messageActions.getConversationMessages(data.messages)).then(response => {
+            console.log('getConversationMessages response:', response);
+
+            if (page.valueOf() === data.totalPages) {
+              setHasMore(false);
+            } else {
+              setHasMore(true);
+            }
+
+            focusOnLastMessage();
+          });
+        }
       });
 
       socket.on('disconnect', data => {
@@ -202,6 +222,29 @@ const ChatSidebar = props => {
 
   /*eslint-disable */
   useEffect(() => {
+    sidebarUsersSetter();
+  }, [onlineUsers]);
+  /*eslint-enable */
+
+  /*eslint-disable */
+  useEffect(() => {
+    if (isFirstRun.current) {
+      isFirstRun.current = false;
+
+      return;
+    }
+
+    if (page === 0) {
+      return;
+    }
+
+    console.log('page:', page);
+    console.log('user.id:', user.id);
+    console.log('userSelected.id:', userSelected.id);
+  }, [page]);
+  /*eslint-enable */
+
+  const sidebarUsersSetter = () => {
     if (onlineUsers.length && users.length) {
       const usersArray = Object.assign([], users);
       const onlineUsersToShowArray = Object.assign([], onlineUsers);
@@ -220,24 +263,25 @@ const ChatSidebar = props => {
 
       setSidebarUsers([...new Set(onlineUsersArray)]);
     }
-  }, [onlineUsers]);
-  /*eslint-enable */
+  };
 
   const setChatbarState = state => {
     dispatch(chatbarActions.toggleSidebarState(state));
   };
 
   const setUserSelectedHandler = userSelected => {
-    console.log('setUserSelectedHandleruser:', userSelected);
+    console.log('userSelected:', userSelected);
     setUserSelected(userSelected);
-    socket.emit('getMessages', { fromId: user.id, toId: userSelected.id });
-
+    setMessagesLoader(true);
     setChatbarState(true);
+
+    setPage(0);
+    socket.emit('getMessages', { fromId: user.id, toId: userSelected.id, page: 0 });
   };
 
   const focusOnLastMessage = () => {
-    var lastMesage = document.getElementsByClassName('conversation')[0];
-    lastMesage.lastChild && lastMesage.lastChild.scrollIntoView(false);
+    var lastMesage = document.getElementsByClassName('itemsContainer')[0];
+    lastMesage && lastMesage.lastChild && lastMesage.lastChild.scrollIntoView(false);
   };
 
   const sendThumb = () => {
@@ -269,9 +313,6 @@ const ChatSidebar = props => {
       payload.responseMessage = response;
 
       socket.emit('chat message', payload);
-
-      console.log('submitMessageHandleruser', user);
-      console.log('userSelected:', userSelected);
     });
 
     e.target.reset();
@@ -368,22 +409,30 @@ const ChatSidebar = props => {
               <Grid xs={12} item>
                 <div className='screen'>
                   <div className='conversation'>
+                    {/* <Messages messages={messagesReducer.messages}></Messages> */}
                     {messagesReducer.messages.length > 0 ? (
-                      messagesReducer.messages.map((messageData, index) => (
-                        <div
-                          style={{ display: 'flex', alignItems: 'center' }}
-                          key={index}
-                          className={
-                            user.username !== messageData.username ? 'messages--received' : `messages--sent messages`
-                          }>
-                          <span style={{ marginRight: '1rem' }}>
-                            {messageData.from === `${user.firstname} ${user.lastname}` ? 'You' : messageData.from}
-                          </span>
-                          <div className={messageData.thumb === true ? 'message--thumb thumb anim-wiggle' : ` message`}>
-                            <span>{messageData.text}</span>
+                      <InfiniteScrollReverse
+                        className='itemsContainer'
+                        hasMore={hasMore}
+                        isLoading={messagesLoader}
+                        loadMore={() => setPage(page + 1)}>
+                        {messagesReducer.messages.map((messageData, index) => (
+                          <div
+                            style={{ display: 'flex', alignItems: 'center' }}
+                            key={index}
+                            className={
+                              user.username !== messageData.username ? 'messages--received' : `messages--sent messages`
+                            }>
+                            <span style={{ marginRight: '1rem' }}>
+                              {messageData.from === `${user.firstname} ${user.lastname}` ? 'You' : messageData.from}
+                            </span>
+                            <div
+                              className={messageData.thumb === true ? 'message--thumb thumb anim-wiggle' : ` message`}>
+                              <span>{messageData.text}</span>
+                            </div>
                           </div>
-                        </div>
-                      ))
+                        ))}
+                      </InfiniteScrollReverse>
                     ) : (
                       <p>Send a message</p>
                     )}

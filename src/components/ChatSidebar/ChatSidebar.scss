@@ -1,7 +1,35 @@
 .ChatSidebarWrapper {
   //-----MESSAGES
+  .MuiDrawer-paper {
+    overflow: hidden;
+  }
   .MuiDrawer-paper::-webkit-scrollbar {
     width: 0.8em;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: #888;
+  }
+
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+
+  .itemsContainer {
+    height: 100%;
+    overflow: auto;
+    padding-right: 1rem;
   }
 
   .MuiDrawer-paper::-webkit-scrollbar-track {
@@ -42,8 +70,8 @@
 
   .conversation {
     height: calc(100% - 52px);
-    overflow: auto;
-    padding: 20px;
+    overflow: hidden;
+    padding: 0 0 20px 20px;
     padding-bottom: 0;
 
     .messages--received {
@@ -98,6 +126,7 @@
     font-size: 12px;
     border-radius: 15px;
     line-height: 1.4;
+
     &--thumb {
       background-color: transparent !important;
       padding: 0;

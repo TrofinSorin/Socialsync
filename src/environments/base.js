@@ -23,6 +23,7 @@ export default function(baseApi, domainUrl) {
       google: {
         clientId: 'PUT_CLIENT_ID_HERE'
       }
-    }
+    },
+    listsLimit: 30
   };
 }
