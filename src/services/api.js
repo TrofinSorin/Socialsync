@@ -3,8 +3,8 @@ import axios from 'axios';
 
 const API_PATH = environment.api.baseApi;
 
-export const get = apiEndpoint => {
-  return axios.get(API_PATH + apiEndpoint).then(response => {
+export const get = (apiEndpoint, params) => {
+  return axios.get(API_PATH + apiEndpoint, { params }).then(response => {
     return response;
   });
 };

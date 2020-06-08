@@ -2,7 +2,8 @@ import * as types from '../actions/actionTypes';
 import Auth from '../../services/Auth';
 
 const initialState = {
-  user: {}
+  user: {},
+  usersToSelectFrom: []
 };
 
 function usersReducer(state = initialState, action) {
@@ -39,6 +40,12 @@ function usersReducer(state = initialState, action) {
       return {
         ...state,
         user: payload.data
+      };
+
+    case types.GET_USERS_TO_SELECT_FROM_SUCCESS:
+      return {
+        ...state,
+        usersToSelectFrom: payload.data
       };
 
     default:

@@ -36,3 +36,10 @@ export const getMessageById = (id, fromId) => async dispatch => {
 
   return messageResponse;
 };
+
+export const clearMessages = () => async dispatch => {
+  dispatch({
+    type: types.CLEAR_MESSAGES,
+    payload: []
+  });
+};

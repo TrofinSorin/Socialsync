@@ -71,6 +71,22 @@ export const getUsers = () => async dispatch => {
   return userResponse;
 };
 
+export const getUsersToSelectFrom = value => async dispatch => {
+  let params = {
+    q: value ? value : null
+  };
+
+  const userResponse = await api.get(`/users`, params);
+  console.log('userResponse:', userResponse);
+
+  dispatch({
+    type: types.GET_USERS_TO_SELECT_FROM_SUCCESS,
+    payload: userResponse ? userResponse.data : null
+  });
+
+  return userResponse;
+};
+
 export const getUserTokenValidation = (id, token) => async dispatch => {
   const userResponse = await api.get(`/users/password/${id}/${token}`);
   console.log('userResponse:', userResponse);

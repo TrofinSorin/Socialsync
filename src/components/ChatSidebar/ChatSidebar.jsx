@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useLayoutEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import clsx from 'clsx';
 import { makeStyles, useTheme, withStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
@@ -20,7 +20,7 @@ import Grid from '@material-ui/core/Grid';
 import useSocket from 'use-socket.io-client';
 import formSerialize from 'form-serialize';
 import './ChatSidebar.scss';
-import InfiniteScrollReverse from 'react-infinite-scroll-reverse';
+import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import Messages from './Messages/Messages';
 
 const StyledBadge = withStyles(theme => ({
@@ -114,6 +114,10 @@ const useStyles = makeStyles(theme => ({
   content: {
     flexGrow: 1,
     padding: theme.spacing(3)
+  },
+  clearSelectedUser: {
+    cursor: 'pointer',
+    fontSize: '2.5rem'
   }
 }));
 
@@ -134,10 +138,7 @@ const ChatSidebar = props => {
   });
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [sidebarUsers, setSidebarUsers] = useState([]);
-  const [messagesLoader, setMessagesLoader] = useState([false]);
-  const [page, setPage] = useState(-1);
-  const [hasMore, setHasMore] = useState(true);
-  const isFirstRun = useRef(true);
+
   socket.connect();
 
   /*eslint-disable */
@@ -151,6 +152,15 @@ const ChatSidebar = props => {
 
     return () => socket.disconnect();
   }, []);
+  /*eslint-enable */
+
+  /*eslint-disable */
+  useEffect(() => {
+    console.log('chatbarState:', chatbarState);
+    if (chatbarState) {
+      dispatch(messageActions.clearMessages());
+    }
+  }, [chatbarState]);
   /*eslint-enable */
 
   /*eslint-disable */
@@ -194,25 +204,6 @@ const ChatSidebar = props => {
         setOnlineUsers(onlineUsers);
       });
 
-      socket.on('receiveMessages', data => {
-        if (data) {
-          console.log('receiveMessages data:', data);
-
-          setMessagesLoader(false);
-          dispatch(messageActions.getConversationMessages(data.messages)).then(response => {
-            console.log('getConversationMessages response:', response);
-
-            if (page.valueOf() === data.totalPages) {
-              setHasMore(false);
-            } else {
-              setHasMore(true);
-            }
-
-            focusOnLastMessage();
-          });
-        }
-      });
-
       socket.on('disconnect', data => {
         socket.emit('getOnlineUsers');
       });
@@ -226,26 +217,8 @@ const ChatSidebar = props => {
   }, [onlineUsers]);
   /*eslint-enable */
 
-  /*eslint-disable */
-  useEffect(() => {
-    if (isFirstRun.current) {
-      isFirstRun.current = false;
-
-      return;
-    }
-
-    if (page === 0) {
-      return;
-    }
-
-    console.log('page:', page);
-    console.log('user.id:', user.id);
-    console.log('userSelected.id:', userSelected.id);
-  }, [page]);
-  /*eslint-enable */
-
   const sidebarUsersSetter = () => {
-    if (onlineUsers.length && users.length) {
+    if (onlineUsers.length && users && users.length) {
       const usersArray = Object.assign([], users);
       const onlineUsersToShowArray = Object.assign([], onlineUsers);
 
@@ -269,18 +242,19 @@ const ChatSidebar = props => {
     dispatch(chatbarActions.toggleSidebarState(state));
   };
 
-  const setUserSelectedHandler = userSelected => {
-    console.log('userSelected:', userSelected);
-    setUserSelected(userSelected);
-    setMessagesLoader(true);
-    setChatbarState(true);
+  const setUserSelectedHandler = newUserSelected => {
+    if (userSelected.id === newUserSelected.id) {
+      return;
+    }
 
-    setPage(0);
-    socket.emit('getMessages', { fromId: user.id, toId: userSelected.id, page: 0 });
+    setUserSelected(newUserSelected);
+    setChatbarState(true);
+    dispatch(messageActions.clearMessages());
   };
 
   const focusOnLastMessage = () => {
     var lastMesage = document.getElementsByClassName('itemsContainer')[0];
+
     lastMesage && lastMesage.lastChild && lastMesage.lastChild.scrollIntoView(false);
   };
 
@@ -349,9 +323,12 @@ const ChatSidebar = props => {
                   <h2>
                     {userSelected.firstname} {userSelected.lastname}
                   </h2>
+                  <HighlightOffIcon
+                    onClick={() => setUserSelectedHandler({})}
+                    className={classes.clearSelectedUser}></HighlightOffIcon>
                 </>
               ) : (
-                <h2>Chat Sidebar</h2>
+                <h2 style={{ marginLeft: '1rem' }}>Select a user to have a conversation</h2>
               )}
               <IconButton style={{ fontSize: '3rem' }} onClick={() => setChatbarState(false)}>
                 {theme.direction === 'ltl' ? (
@@ -409,42 +386,28 @@ const ChatSidebar = props => {
               <Grid xs={12} item>
                 <div className='screen'>
                   <div className='conversation'>
-                    {/* <Messages messages={messagesReducer.messages}></Messages> */}
-                    {messagesReducer.messages.length > 0 ? (
-                      <InfiniteScrollReverse
-                        className='itemsContainer'
-                        hasMore={hasMore}
-                        isLoading={messagesLoader}
-                        loadMore={() => setPage(page + 1)}>
-                        {messagesReducer.messages.map((messageData, index) => (
-                          <div
-                            style={{ display: 'flex', alignItems: 'center' }}
-                            key={index}
-                            className={
-                              user.username !== messageData.username ? 'messages--received' : `messages--sent messages`
-                            }>
-                            <span style={{ marginRight: '1rem' }}>
-                              {messageData.from === `${user.firstname} ${user.lastname}` ? 'You' : messageData.from}
-                            </span>
-                            <div
-                              className={messageData.thumb === true ? 'message--thumb thumb anim-wiggle' : ` message`}>
-                              <span>{messageData.text}</span>
-                            </div>
-                          </div>
-                        ))}
-                      </InfiniteScrollReverse>
-                    ) : (
-                      <p>Send a message</p>
-                    )}
+                    <Messages
+                      setUserSelected={setUserSelected}
+                      chatbarState={chatbarState}
+                      focusOnLastMessage={focusOnLastMessage}
+                      messages={messagesReducer.messages}
+                      user={userReducer.user}
+                      userSelected={userSelected}
+                      socket={socket}></Messages>
                   </div>
-                  <div className='text-bar'>
-                    <form onSubmit={event => submitMessageHandler(event)} className='text-bar__field' id='form-message'>
-                      <input type='text' name='message' placeholder='Type or thumb up ;)' autoComplete='off' />
-                    </form>
-                    <div onClick={() => sendThumb()} className='text-bar__thumb'>
-                      <div className='thumb'></div>
+                  {Object.keys(userSelected).length > 0 ? (
+                    <div className='text-bar'>
+                      <form
+                        onSubmit={event => submitMessageHandler(event)}
+                        className='text-bar__field'
+                        id='form-message'>
+                        <input type='text' name='message' placeholder='Type or thumb up ;)' autoComplete='off' />
+                      </form>
+                      <div onClick={() => sendThumb()} className='text-bar__thumb'>
+                        <div className='thumb'></div>
+                      </div>
                     </div>
-                  </div>
+                  ) : null}
                 </div>
               </Grid>
             ) : null}
