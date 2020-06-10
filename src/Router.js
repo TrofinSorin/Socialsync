@@ -9,6 +9,7 @@ import Security from './components/Security/Security';
 import ChatRoom from './components/ChatRoom/ChatRoom';
 import Account from './components/Account/Account';
 import Logout from './components/Security/Logout/Logout';
+import Profile from './components/Account/Profile/Profile';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -24,7 +25,8 @@ const Router = props => (
     <Switch>
       <Route path='/home' component={Home} />
       <Route path='/chat-room' component={ChatRoom} />
-      <Route path='/profile' component={Account} />
+      <Route path='/profile/:id' component={Profile} />
+      <Route path='/profile/' component={Account} />
       <Route path='/logout' component={Logout} />
       <Route path='/security/' component={Security} />
       <Redirect to='/security/' />

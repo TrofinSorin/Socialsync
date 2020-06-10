@@ -107,7 +107,7 @@ const ChatRoom = props => {
           });
 
           var lastMesage = document.getElementsByClassName('conversation')[0].lastChild;
-          lastMesage.scrollIntoView(false);
+          lastMesage.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
         });
 
         socket.on('getOnlineUsers', data => {

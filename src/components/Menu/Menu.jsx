@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { withRouter, NavLink } from 'react-router-dom';
 import './Menu.scss';
 import HomeIcon from '@assets/icons/raw/homeIcon';
@@ -7,17 +7,19 @@ import ChatIcon from '@material-ui/icons/Chat';
 import mainLogo from '@assets/images/logo_single.png';
 import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
-import InputBase from '@material-ui/core/InputBase';
 import IconButton from '@material-ui/core/IconButton';
 import SearchIcon from '@material-ui/icons/Search';
 import Button from '@material-ui/core/Button';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Auth from '@services/Auth';
-import { useHistory } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import SettingsIcon from '@material-ui/icons/Settings';
 import { Avatar } from '@material-ui/core';
 import { useSelector, useDispatch } from 'react-redux';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import * as usersActions from '@redux/actions/usersActions';
+import TextField from '@material-ui/core/TextField';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -28,7 +30,20 @@ const useStyles = makeStyles(theme => ({
   },
   input: {
     marginLeft: theme.spacing(1),
-    flex: 1
+    height: '3rem',
+    fontSize: '1.6rem',
+    flex: 1,
+    '& .MuiAutocomplete-inputRoot': {
+      '&::before': {
+        display: 'none'
+      },
+      '&::after': {
+        display: 'none'
+      }
+    },
+    '& input': {
+      fontSize: '1.6rem'
+    }
   },
   iconButton: {
     padding: 0,
@@ -46,9 +61,36 @@ const useStyles = makeStyles(theme => ({
 const MenuComponent = props => {
   const { location } = props;
   const classes = useStyles();
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
   let history = useHistory();
-  const { user } = useSelector(state => state.usersReducer);
+  const { user, usersToSelectFrom } = useSelector(state => state.usersReducer);
+  const dispatch = useDispatch();
+  const autocompleteRef = useRef(null);
+  const [value, setValue] = React.useState(null);
+
+  const onChange = event => {
+    setValue(event.target.value);
+  };
+
+  const setUserChangeHandler = (event, selectedUser) => {
+    if (selectedUser) {
+      setTimeout(() => {
+        history.push(`/profile/${selectedUser.id}`);
+      });
+    }
+  };
+
+  const setUserSelectedClickHandler = selectedUser => {
+    setTimeout(() => {
+      history.push(`/profile/${selectedUser.id}`);
+    });
+  };
+
+  /*eslint-disable */
+  useEffect(() => {
+    dispatch(usersActions.getUsersToSelectFrom(value));
+  }, [value]);
+  /*eslint-enable */
 
   const handleClick = event => {
     setAnchorEl(event.currentTarget);
@@ -79,17 +121,49 @@ const MenuComponent = props => {
       <section className='menu'>
         <div className='toolbar'>
           <img style={{ height: '5rem' }} src={mainLogo} alt='mainLogo' />
-          <Paper component='form' className={classes.root}>
-            <InputBase
-              style={{ fontSize: '1.6rem' }}
-              className={classes.input}
-              placeholder='Search Friends'
-              inputProps={{ 'aria-label': 'search google maps' }}
+          <div className='autocomplete-wrapper'>
+            <Autocomplete
+              id='highlights-demo'
+              ref={autocompleteRef}
+              style={{ width: 300 }}
+              options={usersToSelectFrom.filter(item => item.id !== user.id)}
+              getOptionLabel={option => `${option.firstname} ${option.lastname}`}
+              onChange={(event, value) => setUserChangeHandler(event, value)}
+              renderInput={params => (
+                <Paper component='form' className={classes.root}>
+                  <TextField
+                    {...params}
+                    style={{ fontSize: '1.9rem' }}
+                    onChange={onChange}
+                    className={classes.input}
+                    placeholder='Search Friends'
+                  />
+                  <IconButton type='submit' className={classes.iconButton} aria-label='search'>
+                    <SearchIcon />
+                  </IconButton>
+                </Paper>
+              )}
+              renderOption={option => {
+                return (
+                  <div
+                    onClick={() => setUserSelectedClickHandler(option)}
+                    tabIndex='0'
+                    style={{ display: 'flex', alignItems: 'center' }}>
+                    <Avatar
+                      style={{ marginRight: '1rem' }}
+                      src={option.avatar}
+                      name={option.firstname}
+                      size={200}
+                      round='50px'
+                    />
+                    <span style={{ marginRight: '.5rem' }}>{option.firstname}</span>
+                    <span>{option.lastname}</span>
+                  </div>
+                );
+              }}
             />
-            <IconButton type='submit' className={classes.iconButton} aria-label='search'>
-              <SearchIcon />
-            </IconButton>
-          </Paper>
+          </div>
+
           <Button aria-controls='simple-menu' aria-haspopup='true' onClick={handleClick}>
             {Object.keys(user).length > 0 ? (
               <Avatar

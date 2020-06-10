@@ -2,53 +2,23 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import * as usersActions from '@redux/actions/usersActions';
 import { useSelector, useDispatch } from 'react-redux';
-import Autosuggest from 'react-autosuggest';
 import './AutocompleteInput.scss';
 import { Avatar } from '@material-ui/core';
+import TextField from '@material-ui/core/TextField';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 
 const AutocompleteInput = props => {
   const { setUserSelected } = props;
   const [value, setValue] = React.useState('');
-  const [suggestions, setSuggestions] = React.useState([]);
   const dispatch = useDispatch();
   const userReducer = useSelector(state => state.usersReducer);
 
-  const onChange = (event, { newValue }) => {
-    setValue(newValue);
+  const onChange = event => {
+    setValue(event.target.value);
   };
 
-  // When suggestion is clicked, Autosuggest needs to populate the input
-  // based on the clicked suggestion. Teach Autosuggest how to calculate the
-  // input value for every given suggestion.
-  const getSuggestionValue = suggestion => suggestion.firstname;
-
-  // Use your imagination to render suggestions.
-  const renderSuggestion = suggestion => (
-    <div
-      onClick={() => setUserSelectedClickHandler(suggestion)}
-      tabIndex='0'
-      style={{ display: 'flex', alignItems: 'center' }}>
-      <Avatar
-        style={{ marginRight: '1rem' }}
-        src={suggestion.avatar}
-        name={suggestion.firstname}
-        size={200}
-        round='50px'
-      />
-      <span style={{ marginRight: '.5rem' }}>{suggestion.firstname}</span>
-      <span>{suggestion.lastname}</span>
-    </div>
-  );
-
-  // Teach Autosuggest how to calculate suggestions for any given input value.
-  const getSuggestions = value => {
-    const inputValue = value.trim().toLowerCase();
-    const inputLength = inputValue.length;
-    const filteredUsers = userReducer.usersToSelectFrom.filter(user => user.id !== userReducer.user.id);
-
-    return inputLength === 0
-      ? []
-      : filteredUsers.filter(user => user.firstname.toLowerCase().slice(0, inputLength) === inputValue);
+  const setUserChangeHandler = (event, selectedUser) => {
+    setUserSelected(selectedUser);
   };
 
   const setUserSelectedClickHandler = selectedUser => {
@@ -61,35 +31,43 @@ const AutocompleteInput = props => {
   }, [value]);
   /*eslint-enable */
 
-  // Autosuggest will call this function every time you need to update suggestions.
-  // You already implemented this logic above, so just use it.
-  const onSuggestionsFetchRequested = ({ value }) => {
-    console.log('getSuggestions(value):', getSuggestions(value));
-    setSuggestions(getSuggestions(value));
-  };
-
-  // Autosuggest will call this function every time you need to clear suggestions.
-  const onSuggestionsClearRequested = () => {
-    setSuggestions([]);
-  };
-
-  // Autosuggest will pass through all these props to the input.
-  const inputProps = {
-    placeholder: 'Select a user',
-    value,
-    onChange: onChange
-  };
-
   // Finally, render it!
   return (
     <div className='autocomplete-wrapper'>
-      <Autosuggest
-        suggestions={suggestions}
-        onSuggestionsFetchRequested={onSuggestionsFetchRequested}
-        onSuggestionsClearRequested={onSuggestionsClearRequested}
-        getSuggestionValue={getSuggestionValue}
-        renderSuggestion={renderSuggestion}
-        inputProps={inputProps}
+      <Autocomplete
+        id='highlights-demo'
+        style={{ width: 300 }}
+        options={userReducer.usersToSelectFrom.filter(item => item.id !== userReducer.user.id)}
+        getOptionLabel={option => `${option.firstname} ${option.lastname}`}
+        onChange={(event, value) => setUserChangeHandler(event, value)}
+        renderInput={params => (
+          <TextField
+            style={{ width: '80%' }}
+            {...params}
+            onChange={onChange}
+            label='Select User'
+            variant='outlined'
+            margin='normal'
+          />
+        )}
+        renderOption={option => {
+          return (
+            <div
+              onClick={() => setUserSelectedClickHandler(option)}
+              tabIndex='0'
+              style={{ display: 'flex', alignItems: 'center' }}>
+              <Avatar
+                style={{ marginRight: '1rem' }}
+                src={option.avatar}
+                name={option.firstname}
+                size={200}
+                round='50px'
+              />
+              <span style={{ marginRight: '.5rem' }}>{option.firstname}</span>
+              <span>{option.lastname}</span>
+            </div>
+          );
+        }}
       />
     </div>
   );

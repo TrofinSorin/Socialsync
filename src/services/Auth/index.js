@@ -7,7 +7,7 @@ const Auth = {
   guestInfo: {},
   user: {},
   authenticate(data) {
-    console.log('user:', data);
+    console.log('authenticate user:', data);
     if (!data) {
       return;
     }

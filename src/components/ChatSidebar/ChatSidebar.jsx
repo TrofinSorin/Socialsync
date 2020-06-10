@@ -259,11 +259,22 @@ const ChatSidebar = props => {
   };
 
   const sendThumb = () => {
-    socket.emit('chat message', {
+    const payload = {
       username: user.username,
       message: '',
       from: `${user.firstname} ${user.lastname}`,
-      thumb: true
+      toUserId: userSelected.id,
+      fromUserId: user.id,
+      thumb: true,
+      status: ['unread']
+    };
+
+    dispatch(messageActions.addMessage(payload)).then(response => {
+      payload.toUser = userSelected;
+      payload.fromUser = user;
+      payload.responseMessage = response;
+
+      socket.emit('chat message', payload);
     });
   };
 

@@ -118,7 +118,7 @@ const Messages = props => {
               key={index}
               className={user.username !== messageData.username ? 'messages--received' : `messages--sent messages`}>
               <span style={{ marginRight: '1rem' }}>
-                {messageData.from === `${user.firstname} ${user.lastname}` ? 'You' : messageData.from}
+                {messageData.from === `${user.firstname} ${user.lastname}` ? '' : messageData.from}
               </span>
               <div className={messageData.thumb === true ? 'message--thumb thumb anim-wiggle' : ` message`}>
                 <span>{messageData.text}</span>

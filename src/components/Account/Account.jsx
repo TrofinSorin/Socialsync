@@ -6,7 +6,6 @@ const Account = ({ match }) => {
   return (
     <React.Fragment>
       <AccountToolbar></AccountToolbar>
-      <Profile match={match}></Profile>
     </React.Fragment>
   );
 };
