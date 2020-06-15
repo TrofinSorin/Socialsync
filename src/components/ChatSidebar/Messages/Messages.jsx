@@ -36,7 +36,7 @@ const Messages = props => {
   const scrollHandler = () => {
     const itemsContainer = document.getElementsByClassName('itemsContainer')[0];
 
-    if (itemsContainer.scrollTop < 100) {
+    if (itemsContainer && itemsContainer.scrollTop < 100) {
       setLoadScrollMessages(true);
     } else {
       setLoadScrollMessages(false);
@@ -120,9 +120,9 @@ const Messages = props => {
               <span style={{ marginRight: '1rem' }}>
                 {messageData.from === `${user.firstname} ${user.lastname}` ? '' : messageData.from}
               </span>
-              <div className={messageData.thumb === true ? 'message--thumb thumb anim-wiggle' : ` message`}>
-                <span>{messageData.text}</span>
-              </div>
+              <span className={messageData.thumb === true ? 'message--thumb thumb anim-wiggle' : ` message`}>
+                {messageData.text}
+              </span>
             </div>
           ))}
         </InfiniteScrollReverse>

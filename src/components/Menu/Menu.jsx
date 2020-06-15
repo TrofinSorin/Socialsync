@@ -75,7 +75,7 @@ const MenuComponent = props => {
   const setUserChangeHandler = (event, selectedUser) => {
     if (selectedUser) {
       setTimeout(() => {
-        history.push(`/profile/${selectedUser.id}`);
+        history.replace(`/profile/${selectedUser.id}`);
       });
     }
   };

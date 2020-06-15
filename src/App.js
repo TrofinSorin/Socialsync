@@ -9,6 +9,8 @@ import { useHistory } from 'react-router-dom';
 import SnackBarComponent from './_shared/SnackBarComponent/SnackBarComponent';
 import ChatSidebar from './components/ChatSidebar/ChatSidebar';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   Auth.init();
@@ -52,6 +54,7 @@ function App() {
       </div>
 
       <SnackBarComponent></SnackBarComponent>
+      <ToastContainer autoClose={612312312000} draggable={false} />
     </React.Fragment>
   );
 }

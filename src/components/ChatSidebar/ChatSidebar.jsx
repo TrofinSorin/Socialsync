@@ -22,6 +22,7 @@ import formSerialize from 'form-serialize';
 import './ChatSidebar.scss';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import Messages from './Messages/Messages';
+import { toast } from 'react-toastify';
 
 const StyledBadge = withStyles(theme => ({
   badge: {
@@ -158,6 +159,7 @@ const ChatSidebar = props => {
   useEffect(() => {
     console.log('chatbarState:', chatbarState);
     if (chatbarState) {
+      socket.emit('getOnlineUsers');
       dispatch(messageActions.clearMessages());
     }
   }, [chatbarState]);
@@ -177,19 +179,19 @@ const ChatSidebar = props => {
         dispatch(messageActions.addMessageInConversation(data.responseMessage));
 
         if (settedUser.id !== data.fromUser.id) {
-          setMessagesLoader(true);
-          socket.emit('getMessages', { fromId: settedUser.id, toId: data.fromUser.id });
-          setUserSelected(data.fromUser);
-
+          // socket.emit('getMessages', { fromId: settedUser.id, toId: data.fromUser.id });
+          // setUserSelected(data.fromUser);
+          displayMsg(data.responseMessage, data.fromUser, setUserSelected);
           console.log('userSElected', userSelected);
         }
 
-        setChatbarState(true);
+        // setChatbarState(true);
 
         focusOnLastMessage();
       });
 
       socket.on('getOnlineUsers', data => {
+        console.log('data:', data);
         setOnlineUsers([]);
 
         const onlineUsers = [];
@@ -217,6 +219,21 @@ const ChatSidebar = props => {
   }, [onlineUsers]);
   /*eslint-enable */
 
+  const Msg = ({ message, closeToast, fromUser, setUserSelected }) => {
+    const openConversation = (event, user) => {
+      event.stopPropagation();
+      setUserSelected(user);
+      closeToast();
+    };
+
+    return (
+      <div onClick={event => openConversation(event, fromUser)} style={{ display: 'flex', alignItems: 'center' }}>
+        <h2 style={{ flexBasis: 'auto' }}>{message.from}:</h2>
+        <h3 style={{ marginLeft: '0.5rem', marginBottom: '.2rem', wordBreak: 'break-all' }}>{message.text}</h3>
+      </div>
+    );
+  };
+
   const sidebarUsersSetter = () => {
     if (onlineUsers.length && users && users.length) {
       const usersArray = Object.assign([], users);
@@ -234,8 +251,16 @@ const ChatSidebar = props => {
 
       const onlineUsersArray = usersArray.filter(onlineUser => onlineUser.id !== user.id);
 
+      console.log('onlineUsersArray:', onlineUsersArray);
       setSidebarUsers([...new Set(onlineUsersArray)]);
     }
+  };
+
+  const displayMsg = (message, fromUser, setUserSelected) => {
+    console.log('displayMsg:');
+    toast(<Msg message={message} fromUser={fromUser} setUserSelected={setUserSelectedHandler} />, {
+      position: toast.POSITION.BOTTOM_RIGHT
+    });
   };
 
   const setChatbarState = state => {
@@ -355,7 +380,7 @@ const ChatSidebar = props => {
           <Loader></Loader>
         ) : (
           <Grid style={{ height: '92%', flexWrap: 'nowrap' }} container>
-            <Grid style={{ height: '100%' }} item xs={chatbarState ? 3 : 12}>
+            <Grid style={{ height: '100%' }} item xs={chatbarState ? 2 : 12}>
               <List style={{ backgroundColor: '#F7F7F7', height: '100%', padding: '0' }}>
                 {sidebarUsers
                   .sort((a, b) => b.online - a.online)
@@ -394,7 +419,7 @@ const ChatSidebar = props => {
             </Grid>
 
             {chatbarState ? (
-              <Grid xs={12} item>
+              <Grid xs={10} item>
                 <div className='screen'>
                   <div className='conversation'>
                     <Messages
