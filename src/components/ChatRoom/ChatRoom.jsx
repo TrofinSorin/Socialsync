@@ -12,10 +12,9 @@ import Avatar from 'react-avatar';
 
 const ChatRoom = props => {
   const dispatch = useDispatch();
-  const [socket] = useSocket('http://localhost:8001', {
-    autoConnect: false
-    //any other options
-  });
+  // const [socket] = useSocket('http://localhost:8001', {
+  //   //any other options
+  // });
 
   const [users, setUsers] = useState([]);
   const [userLoader, setUserLoader] = useState(false);
@@ -27,49 +26,44 @@ const ChatRoom = props => {
   const [onlineUsersToShow, setOnlineUsersToShow] = useState([]);
 
   const sendThumb = () => {
-    socket.emit('chat message', {
-      username: user.username,
-      message: '',
-      from: `${user.firstname} ${user.lastname}`,
-      thumb: true
-    });
+    // socket.emit('chat message', {
+    //   username: user.username,
+    //   message: '',
+    //   from: `${user.firstname} ${user.lastname}`,
+    //   thumb: true
+    // });
   };
 
   const joinRoom = e => {
-    e.preventDefault();
-
-    const formData = formSerialize(e.target, { hash: true });
-
-    socket.emit('createRoom', formData.room);
-    setRoom(formData.room);
+    // e.preventDefault();
+    // const formData = formSerialize(e.target, { hash: true });
+    // socket.emit('createRoom', formData.room);
+    // setRoom(formData.room);
   };
 
   const leaveRoom = () => {
-    socket.emit('leaveRoom', room);
-    setRoom(null);
+    // socket.emit('leaveRoom', room);
+    // setRoom(null);
   };
 
   const joinUserRoom = user => {
-    console.log('user:', user);
-    socket.emit('createRoom', user.socket);
-    setRoom(user.socket);
+    // console.log('user:', user);
+    // socket.emit('createRoom', user.socket);
+    // setRoom(user.socket);
   };
 
   /*eslint-disable */
   useEffect(() => {
-    socket.emit('getRooms');
-
-    socket.on('getRooms', data => {
-      console.log('data:', data);
-
-      setRooms(draft => {
-        draft.push({ data });
-      });
-    });
-
-    socket.on('disconnect', data => {
-      socket.emit('getOnlineUsers');
-    });
+    // socket.emit('getRooms');
+    // socket.on('getRooms', data => {
+    //   console.log('data:', data);
+    //   setRooms(draft => {
+    //     draft.push({ data });
+    //   });
+    // });
+    // socket.on('disconnect', data => {
+    //   socket.emit('getOnlineUsers');
+    // });
   }, []);
   /*eslint-enable */
 
@@ -79,50 +73,43 @@ const ChatRoom = props => {
 
     const getUser = Auth.getUser();
 
-    dispatch(usersActions.getUsers())
-      .then(result => {
-        setUsers(result.data.data);
-        setUserLoader(false);
-      })
-      .catch(err => {});
+    // dispatch(usersActions.getUsers())
+    //   .then(result => {
+    //     setUsers(result.data.data);
+    //     setUserLoader(false);
+    //   })
+    //   .catch(err => {});
 
     if (getUser.loginUser) {
       dispatch(usersActions.getUser(getUser.loginUser.id)).then(result => {
-        Auth.update(result.data);
-        setUser(result.data.data);
-
-        socket.emit('login', { userId: result.data.data.id });
-        socket.emit('getOnlineUsers');
-
-        socket.on('chat message', data => {
-          setMessages(draft => {
-            draft.push({
-              from: `${data.from}`,
-              message: data.message,
-              username: data.username,
-              thumb: data.thumb,
-              room: room
-            });
-          });
-
-          var lastMesage = document.getElementsByClassName('conversation')[0].lastChild;
-          lastMesage.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
-        });
-
-        socket.on('getOnlineUsers', data => {
-          setOnlineUsers([]);
-
-          const onlineUsers = [];
-
-          Object.keys(data).forEach(socket => {
-            onlineUsers.push({
-              userId: data[socket],
-              socket: socket
-            });
-          });
-
-          setOnlineUsers(onlineUsers);
-        });
+        // Auth.update(result.data);
+        // setUser(result.data.data);
+        // socket.emit('login', { userId: result.data.data.id });
+        // socket.emit('getOnlineUsers');
+        // socket.on('chat message', data => {
+        //   setMessages(draft => {
+        //     draft.push({
+        //       from: `${data.from}`,
+        //       message: data.message,
+        //       username: data.username,
+        //       thumb: data.thumb,
+        //       room: room
+        //     });
+        //   });
+        //   var lastMesage = document.getElementsByClassName('conversation')[0].lastChild;
+        //   lastMesage.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
+        // });
+        // socket.on('getOnlineUsers', data => {
+        //   setOnlineUsers([]);
+        //   const onlineUsers = [];
+        //   Object.keys(data).forEach(socket => {
+        //     onlineUsers.push({
+        //       userId: data[socket],
+        //       socket: socket
+        //     });
+        //   });
+        //   setOnlineUsers(onlineUsers);
+        // });
       });
     }
   }, []);
@@ -130,25 +117,21 @@ const ChatRoom = props => {
 
   /*eslint-disable */
   useEffect(() => {
-    const onlineUsersArray = [];
-    const usersArray = Object.assign([], users);
-
-    onlineUsersArray.push(...onlineUsers);
-
-    usersArray.forEach(user => {
-      onlineUsersArray.forEach(onlineUser => {
-        if (onlineUser.userId === user.id) {
-          onlineUser.username = user.username;
-          onlineUser.nickname = `${user.firstname} ${user.lastname}`;
-        }
-      });
-    });
-
-    const filteredArray = onlineUsersArray.filter(function(value, index) {
-      return onlineUsers.indexOf(value) === index;
-    });
-
-    setOnlineUsersToShow([...new Set(filteredArray)]);
+    // const onlineUsersArray = [];
+    // const usersArray = Object.assign([], users);
+    // onlineUsersArray.push(...onlineUsers);
+    // usersArray.forEach(user => {
+    //   onlineUsersArray.forEach(onlineUser => {
+    //     if (onlineUser.userId === user.id) {
+    //       onlineUser.username = user.username;
+    //       onlineUser.nickname = `${user.firstname} ${user.lastname}`;
+    //     }
+    //   });
+    // });
+    // const filteredArray = onlineUsersArray.filter(function(value, index) {
+    //   return onlineUsers.indexOf(value) === index;
+    // });
+    // setOnlineUsersToShow([...new Set(filteredArray)]);
   }, [onlineUsers]);
   /*eslint-enable */
 
@@ -157,13 +140,13 @@ const ChatRoom = props => {
 
     const messageForm = formSerialize(e.target, { hash: true });
 
-    socket.emit('chat message', {
-      username: user.username,
-      message: messageForm.message,
-      from: `${user.firstname} ${user.lastname}`,
-      thumb: false,
-      room: room
-    });
+    // socket.emit('chat message', {
+    //   username: user.username,
+    //   message: messageForm.message,
+    //   from: `${user.firstname} ${user.lastname}`,
+    //   thumb: false,
+    //   room: room
+    // });
 
     e.target.reset();
   };

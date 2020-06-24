@@ -157,9 +157,9 @@ const ChatSidebar = props => {
 
   /*eslint-disable */
   useEffect(() => {
-    console.log('chatbarState:', chatbarState);
+    console.log('chatbarState:', chatbarState, user.id);
     if (chatbarState) {
-      socket.emit('getOnlineUsers');
+      socket.emit('getOnlineUsers', user.id);
       dispatch(messageActions.clearMessages());
     }
   }, [chatbarState]);
@@ -173,8 +173,13 @@ const ChatSidebar = props => {
       setUser(settedUser);
 
       socket.emit('login', { userId: settedUser.id });
-      socket.emit('getOnlineUsers');
+      socket.emit('getOnlineUsers', settedUser.id);
 
+      // We remove the subscriber if it was one before that was initialized so we don't have multiple observers that can break the app
+      socket.removeListener('chat message');
+      socket.removeListener('getOnlineUsers');
+
+      // Subscribe to chat message to get messages and display pop-ups
       socket.on('chat message', data => {
         dispatch(messageActions.addMessageInConversation(data.responseMessage));
 
@@ -187,6 +192,7 @@ const ChatSidebar = props => {
 
         // setChatbarState(true);
 
+        // focus on last mesasge after it was dispatched
         focusOnLastMessage();
       });
 
@@ -206,8 +212,8 @@ const ChatSidebar = props => {
         setOnlineUsers(onlineUsers);
       });
 
-      socket.on('disconnect', data => {
-        socket.emit('getOnlineUsers');
+      socket.once('disconnect', data => {
+        socket.emit('getOnlineUsers', user.id);
       });
     }
   }, [userReducer.user]);
@@ -269,6 +275,8 @@ const ChatSidebar = props => {
 
   const setUserSelectedHandler = newUserSelected => {
     if (userSelected.id === newUserSelected.id) {
+      setChatbarState(true);
+
       return;
     }
 

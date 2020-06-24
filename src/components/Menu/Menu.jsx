@@ -26,7 +26,11 @@ const useStyles = makeStyles(theme => ({
     padding: '2px 4px',
     display: 'flex',
     alignItems: 'center',
-    width: 400
+    width: 'auto',
+    minWidth: 400,
+    [theme.breakpoints.down('sm')]: {
+      minWidth: 200
+    }
   },
   input: {
     marginLeft: theme.spacing(1),
@@ -120,12 +124,12 @@ const MenuComponent = props => {
     <div className='MenuWrapper'>
       <section className='menu'>
         <div className='toolbar'>
-          <img style={{ height: '5rem' }} src={mainLogo} alt='mainLogo' />
+          <img className='main-logo' style={{ height: '5rem' }} src={mainLogo} alt='mainLogo' />
           <div className='autocomplete-wrapper'>
             <Autocomplete
               id='highlights-demo'
               ref={autocompleteRef}
-              style={{ width: 300 }}
+              style={{ width: 'auto' }}
               options={usersToSelectFrom.filter(item => item.id !== user.id)}
               getOptionLabel={option => `${option.firstname} ${option.lastname}`}
               onChange={(event, value) => setUserChangeHandler(event, value)}

@@ -54,7 +54,7 @@ function App() {
       </div>
 
       <SnackBarComponent></SnackBarComponent>
-      <ToastContainer autoClose={612312312000} draggable={false} />
+      <ToastContainer autoClose={5000} draggable={false} />
     </React.Fragment>
   );
 }

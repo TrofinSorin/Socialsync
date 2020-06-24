@@ -27,6 +27,12 @@
         height: 7rem !important;
         width: 7rem;
       }
+
+      .main-logo {
+        @include respondto(phone) {
+          display: none;
+        }
+      }
     }
 
     h1 {

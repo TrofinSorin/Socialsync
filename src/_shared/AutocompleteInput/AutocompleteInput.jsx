@@ -36,7 +36,7 @@ const AutocompleteInput = props => {
     <div className='autocomplete-wrapper'>
       <Autocomplete
         id='highlights-demo'
-        style={{ width: 300 }}
+        style={{ width: 'auto' }}
         options={userReducer.usersToSelectFrom.filter(item => item.id !== userReducer.user.id)}
         getOptionLabel={option => `${option.firstname} ${option.lastname}`}
         onChange={(event, value) => setUserChangeHandler(event, value)}
